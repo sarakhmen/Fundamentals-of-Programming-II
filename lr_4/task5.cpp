@@ -3,11 +3,11 @@
 #include <string>
 #include <vector>
 #include <list>
-#include <unordered_map>
+#include <map>
 using namespace std;
 
 typedef vector<string> Prefix;
-unordered_map<Prefix, list<string>> statetab;
+map<Prefix, list<string>> statetab;
 
 enum{
     NPREF = 2,
