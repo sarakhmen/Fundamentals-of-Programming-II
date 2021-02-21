@@ -35,3 +35,4 @@
 *.doc
 *.docx
 *.s
+.vscode/*

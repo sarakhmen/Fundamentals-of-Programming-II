@@ -1,18 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 enum{
 	NPREF = 2,
 	NHASH = 5,
-    MULRIPLIER=31,
+    MULTIPLIER=31,
+    NHASH2 = 2000,
 	MAXGEN = 10000
 };
 
 typedef struct State State;
 typedef struct Suffix Suffix;
+typedef struct List List;
 
+
+struct List{
+    char *word;
+    List *next;
+};
 
 struct State {
 	char *pref[NPREF];
@@ -26,13 +32,14 @@ struct Suffix{
 };
 
 State *statetab[NHASH];
-char NONWORD[] = "\n";
+List *wordtab[NHASH2];
 
 
 
 State *lookup(char *prefix[NPREF], int create);
+char *add_to_tab(char *word);
 unsigned int hash(char *s[NPREF]);
-char *mystrdup(char *s);
+unsigned int hash2(char *w);
 void build( char *prefix [NPREF], FILE *f);
 void addsuffix(State *sp, char *suffix);
 void add(char *prefix[NPREF], char *suffix);
@@ -41,23 +48,17 @@ void generate(int nwords);
 
 
 int main(void){
-	clock_t begin = clock();
 	int nwords = MAXGEN;
-	char *prefix[NPREF];
-	for(int i=0; i<NPREF; i++){
-		prefix[i] = NONWORD;
-	}
-	
+	char *prefix[NPREF] = {NULL};
 	FILE *file;
-	file = fopen("large_text.txt", "r");
+	file = fopen("few_words.txt", "r");
 	if(file){
 		build(prefix, file);
 		fclose(file);
 	}
-	add(prefix, NONWORD);
+	add(prefix, NULL);
 	generate(nwords);
-	printf("Elapsed time = %fs", (double)(clock() - begin)/CLOCKS_PER_SEC);
-	system("pause");
+    system("pause");
 	return 0;
 }
 
@@ -69,7 +70,7 @@ State *lookup(char *prefix[NPREF], int create){
 	int h = hash(prefix);
 	for(sp = statetab[h]; sp != NULL; sp = sp->next){
 		for(i = 0; i < NPREF; i++)
-			if(strcmp(prefix[i], sp->pref[i]) != 0)
+			if(prefix[i] != sp->pref[i])
 				break;
 		if(i == NPREF)
 			return sp;
@@ -95,23 +96,13 @@ unsigned int hash(char *s[NPREF]){
 	unsigned int h = 0;
 	unsigned char *p;
 	for(int i = 0; i < NPREF; i++){
+        if(s[i] == NULL)
+            continue;
 		for(p = (unsigned char *)s[i]; *p != '\0'; p++){
-			h = MULRIPLIER*h + *p;
+			h = MULTIPLIER*h + *p;
 		}
 	}
 	return h % NHASH;
-}
-
-
-char *mystrdup(char *s){
-	char *t;
-	t = (char *)malloc(strlen(s)+1);
-	if(t == NULL){
-		perror("Error: strdup failed.\n");
-		exit(1);
-	}
-	memmove(t, s, strlen(s)+1);
-	return t;
 }
 
 
@@ -121,7 +112,7 @@ void build( char *prefix [NPREF], FILE *f){
 	printf("fmt=\"%s\"\n", fmt);
 	while(fscanf(f, fmt, buf) != EOF){
 		printf("%s ", buf);
-		add(prefix, mystrdup(buf));
+		add(prefix, add_to_tab(buf));
 	}
 	putchar('\n');
 }
@@ -149,11 +140,9 @@ void add(char *prefix[NPREF], char *suffix){
 void generate(int nwords){
 	State *sp;
 	Suffix *suf;
-	char *prefix[NPREF], *w;
+	char *prefix[NPREF] = {NULL}, 
+         *w;
 	int i, nmatch;
-	for( i = 0; i<NPREF; i++){
-		prefix[i] = NONWORD;
-	}
 	for(i=0; i<nwords; i++){
 		sp = lookup(prefix, 0);
 		nmatch = 0;
@@ -162,10 +151,39 @@ void generate(int nwords){
 				w = suf->word;
 			}
 		}
-		if(strcmp(w, NONWORD) == 0)
+		if(w == NULL)
 			break;
-		// printf("%s\n", w);
+		printf("%s\n", w);
 		memmove(prefix, prefix+1, (NPREF-1) * sizeof(prefix[0]));
 		prefix[NPREF-1] = w;
 	}
+}
+
+
+char *add_to_tab(char *word){
+    List *ls;
+    unsigned h = hash2(word);
+    for(ls = wordtab[h]; ls!=NULL; ls = ls->next){
+        if(strcmp(word, ls->word) == 0)
+            return ls->word;
+    }
+    List *node = (List*)malloc(sizeof(List));
+	char *t = (char *)malloc(strlen(word)+1);
+	if(!node || !t){
+        printf("Memory allocation error.\n");
+        exit(1);
+    }
+	strcpy(t, word);
+	node->word = t;
+    node->next = wordtab[h];
+    wordtab[h] = node;
+    return t;
+}
+
+unsigned int hash2(char *w){
+	unsigned int h = 0;
+	unsigned char *p;
+	for(p = (unsigned char *) w; *p != '\0'; p++)
+		h = MULTIPLIER*h + *p;
+	return h % NHASH2;
 }
