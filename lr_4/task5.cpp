@@ -64,5 +64,6 @@ int main(){
     build(prefix, in);
     add(prefix, NONWORD);
     generate(nwords);
+    in.close();
     return 0;
 }
