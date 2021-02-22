@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <ctime>
 #include <string>
 #include "my_map.h"
 #include "my_array.h"
@@ -21,6 +22,7 @@ my_map statetab;
 
 
 int main() {
+    clock_t begin = clock();
     ifstream in("..\\large_text.txt", ios_base::in);
     if (!in.is_open()) {
         cout << "Error while opening file!" << endl;
@@ -35,6 +37,7 @@ int main() {
     add(prefix, NONWORD);
     generate(nwords);
     in.close();
+    cout << "\n\n(custom containers) elapsed time = " << double(clock() - begin)/CLOCKS_PER_SEC << endl;
     return 0;
 }
 

@@ -2,8 +2,6 @@
 #define MY_ARRAY
 
 #include <string>
-#include <iostream>
-
 using namespace std;
 
 typedef class my_array Suffix;
