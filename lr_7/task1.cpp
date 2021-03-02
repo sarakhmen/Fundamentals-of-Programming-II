@@ -19,7 +19,7 @@ coord coord::operator *(const coord &obj){
 }
 
 coord coord::operator /(const coord &obj){
-    if(obj.x == 0 && obj.y == 0){
+    if(obj.x == 0 || obj.y == 0){
         cout << "divide by zero!" << endl;
         exit(1);
     }
@@ -38,6 +38,6 @@ int main(){
     cout << "(obj1*obj2) X: " << x << ", Y: " << y << endl;
     obj3 = obj2 / obj1;
     obj3.get_xy(x, y);
-    cout << "(obj1/obj2) X: " << x << ", Y: " << y << endl;
+    cout << "(obj2/obj1) X: " << x << ", Y: " << y << endl;
     return 0;
 }
