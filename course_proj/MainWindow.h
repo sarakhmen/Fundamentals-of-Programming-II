@@ -22,8 +22,10 @@ private:
 	BOOL CreateButtons();
 	void OnButtonClicked(WPARAM wParam, LPARAM lParam);
 	void OnCreate();
+	void OnDeleteSelected();
 	void OnButtonAddItem();
 	void OnButtonEditItem();
+	void OnButtonClear();
 public:
 	MainWindow();
 	~MainWindow();

@@ -69,11 +69,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR szCmdLine, int nCmdSho
 
 	MainWindow myWnd;
 
-	if (!myWnd.Create(L"Hostel administrator", WS_OVERLAPPEDWINDOW, 0, 500, 300, 640, 480))
+	if (!myWnd.Create(L"Hostel administrator", WS_OVERLAPPEDWINDOW, 0, 500, 300, 700, 480))
 		return 0;
 
 	ShowWindow(myWnd.Window(), nCmdShow);
-	//HWND hListView = CreateListView(myWnd.Window());
+	//HWND hListView = CreateListView(myWnd.m_hwnd);
 	//if (hListView == NULL)
 	//	PrintConsole(L"ERROR");
 	//ShowWindow(hListView, nCmdShow);

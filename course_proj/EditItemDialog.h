@@ -11,6 +11,7 @@ using namespace std;
 
 class EditItemDialog : public BaseWindow<EditItemDialog> {
 private:
+	int iItemToEdit{};
 	bool endLoop{};
 	HWND parent{};
 	vector<vector<wstring>>* pData{};
@@ -19,13 +20,15 @@ private:
 	HWND CreateEditTextControl(DWORD id, int X, int Y, int nWidth, int nHeight, int textLength);
 	HWND CreateStaticTextControl(DWORD id, LPCWSTR szStr, int X, int Y, int nWidth, int nHeight);
 	void CleanEditTextFields();
-	void OnButtonAdd();
+	void OnButtonEdit();
+	void InitializeContent(int);
+
 public:
 	EditItemDialog(HWND, vector<vector<wstring>>*);
 	~EditItemDialog();
 	PCWSTR ClassName() const;
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
-	void GetUserInput();
+	void GetUserEdit(int);
 };
 
 #endif

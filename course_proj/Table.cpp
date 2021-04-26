@@ -1,8 +1,11 @@
 #include "Table.h"
 
 
-Table::Table(HWND parent, DWORD id){
-	CreateTable(parent, id);
+Table::Table(HWND parent, DWORD id, UINT tableOffsetX){
+	hParent = parent;
+	tableId = id;
+	this->tableOffsetX = tableOffsetX;
+	CreateTable();
 	InitColumns();
 	InitItems();
 }
@@ -23,19 +26,19 @@ HWND Table::GetListViewHandle() const {
 }
 
 
-void Table::ResizeTable(HWND parent) {
+void Table::ResizeTable() {
 	RECT rc;
-	GetClientRect(parent, &rc);
+	GetClientRect(hParent, &rc);
 	MoveWindow(lstView,
-		rc.left + 150,
+		rc.left + tableOffsetX,
 		rc.top,
-		rc.right - rc.left - 150,
+		rc.right - rc.left - tableOffsetX,
 		rc.bottom - rc.top,
 		TRUE);
 }
 
 
-void Table::CreateTable(HWND parent, DWORD id) {
+void Table::CreateTable() {
 	INITCOMMONCONTROLSEX icex{};
 	icex.dwICC = ICC_LISTVIEW_CLASSES;
 	InitCommonControlsEx(&icex);
@@ -43,13 +46,14 @@ void Table::CreateTable(HWND parent, DWORD id) {
 		L"",
 		WS_CHILD | LVS_REPORT | LVS_EDITLABELS | LVS_OWNERDATA | WS_VISIBLE | WS_BORDER | WS_TABSTOP,
 		0, 0, 0, 0,
-		parent,
-		reinterpret_cast<HMENU>(id),
+		hParent,
+		reinterpret_cast<HMENU>(tableId),
 		GetModuleHandle(nullptr),
 		NULL);
 	if (!lstView)
 		throw exception{ "Error while creating ListView" };
-	ResizeTable(parent);
+	ListView_SetExtendedListViewStyle(lstView, LVS_EX_FULLROWSELECT);
+	ResizeTable();
 }
 
 
@@ -69,14 +73,14 @@ void Table::InitColumns() {
 
 
 void Table::InitItems() {
-	//data.push_back({ L"1first", L"1second", L"1third", L"1fourth", L"1fifth" });
-	//data.push_back({ L"2first", L"2second", L"2third", L"2fourth", L"2fifth" });
-	//data.push_back({ L"3first", L"3second", L"3third", L"3fourth", L"3fifth" });
-	//data.push_back({ L"4first", L"4second", L"4third", L"4fourth", L"4fifth" });
-	//data.push_back({ L"5first", L"5second", L"5third", L"5fourth", L"5fifth" });
-	//data.push_back({ L"6first", L"6second", L"6third", L"6fourth", L"6fifth" });
-	//data.push_back({ L"7first", L"7second", L"7third", L"7fourth", L"7fifth" });
-	//data.push_back({ L"8first", L"8second", L"8third", L"8fourth", L"8fifth" });
+	data.push_back({ L"1first", L"1second", L"1third", L"1fourth", L"1fifth" });
+	data.push_back({ L"2first", L"2second", L"2third", L"2fourth", L"2fifth" });
+	data.push_back({ L"3first", L"3second", L"3third", L"3fourth", L"3fifth" });
+	data.push_back({ L"4first", L"4second", L"4third", L"4fourth", L"4fifth" });
+	data.push_back({ L"5first", L"5second", L"5third", L"5fourth", L"5fifth" });
+	data.push_back({ L"6first", L"6second", L"6third", L"6fourth", L"6fifth" });
+	data.push_back({ L"7first", L"7second", L"7third", L"7fourth", L"7fifth" });
+	data.push_back({ L"8first", L"8second", L"8third", L"8fourth", L"8fifth" });
 
 	/*LVITEM lvI;
 	lvI.pszText = LPSTR_TEXTCALLBACK;
@@ -120,4 +124,43 @@ LRESULT Table::TableNotify(LPARAM lParam) {
 
 void Table::UpdateItems() {
 	ListView_SetItemCount(lstView, data.size());
+}
+
+
+void Table::DeleteSelected() {
+	int iPos = ListView_GetNextItem(lstView, -1, LVNI_SELECTED);
+	if (iPos == -1)
+		MessageBox(hParent, L"Жоден елемент не виділено", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
+	else if (MessageBox(hParent, L"Ви дійсно хочете видалити всі виділені елементи?", L"Підтвердження видалення", MB_OKCANCEL) == IDOK) {
+		vector<int> iVec;
+		while (iPos != -1) {
+			iVec.push_back(iPos);
+			iPos = ListView_GetNextItem(lstView, iPos , LVNI_SELECTED);
+		}
+		ListView_SetItemCount(lstView, data.size() - iVec.size());
+		for(size_t i = 0; i < iVec.size(); ++i)
+			data.erase(data.begin() + iVec[i] - i);
+		MessageBox(hParent, L"Елементи успішно видалено", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
+	}
+}
+
+
+int Table::GetItemToEdit() {
+	int iPos = ListView_GetNextItem(lstView, -1, LVNI_SELECTED);
+	if(iPos != -1) {
+		if (ListView_GetNextItem(lstView, iPos, LVNI_SELECTED) != -1) {
+			MessageBox(hParent, L"Виділено забагато елементів, виберіть лише один", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
+			iPos = -1;
+		}
+	}
+	else {
+		MessageBox(hParent, L"Виділіть один елемент, який потрібно редагувати", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
+	}
+	return iPos;
+}
+
+
+void Table::ClearData() {
+	ListView_SetItemCount(lstView, 0);
+	data.clear();
 }

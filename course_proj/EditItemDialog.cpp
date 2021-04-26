@@ -7,8 +7,8 @@ EditItemDialog::EditItemDialog(HWND hwndParent, vector<vector<wstring>>* pData) 
 
 
 EditItemDialog::~EditItemDialog() {
-	if (Window())
-		CloseHandle(Window());
+	if (m_hwnd)
+		CloseHandle(m_hwnd);
 }
 
 
@@ -25,14 +25,14 @@ LRESULT EditItemDialog::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
-		case ID_ADDITEMDIALOG_BUTTON_ADD:
-			OnButtonAdd();
+		case ID_EDITITEMDIALOG_BUTTON_EDIT:
+			OnButtonEdit();
 			break;
 		}
 		return 0;
 
 	case WM_CLOSE:
-		CleanEditTextFields();
+		//CleanEditTextFields();
 		endLoop = true;
 		return 0;
 	}
@@ -40,12 +40,14 @@ LRESULT EditItemDialog::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 }
 
 
-void EditItemDialog::GetUserInput() {
+void EditItemDialog::GetUserEdit(int iItem) {
+	iItemToEdit = iItem;
 	EnableWindow(parent, FALSE);
-	ShowWindow(Window(), SW_SHOW);
+	ShowWindow(m_hwnd, SW_SHOW);
+	InitializeContent(iItem);
 	MessageLoop();
 	EnableWindow(parent, TRUE);
-	ShowWindow(Window(), SW_HIDE);
+	ShowWindow(m_hwnd, SW_HIDE);
 	SetFocus(parent);
 }
 
@@ -69,18 +71,18 @@ void EditItemDialog::MessageLoop() {
 void EditItemDialog::OnCreate() {
 	PrintConsole(L"ON_CREATE\n");
 	//check if creation is successful
-	CreateEditTextControl(ID_ADDITEMDIALOG_EDIT1, 200, 15, 260, 30, EDITTEXT1_MAX_LENGTH);
-	CreateEditTextControl(ID_ADDITEMDIALOG_EDIT2, 200, 60, 260, 30, EDITTEXT2_MAX_LENGTH);
-	CreateEditTextControl(ID_ADDITEMDIALOG_EDIT3, 200, 105, 260, 30, EDITTEXT3_MAX_LENGTH);
-	CreateEditTextControl(ID_ADDITEMDIALOG_EDIT4, 200, 150, 260, 30, EDITTEXT4_MAX_LENGTH);
-	CreateEditTextControl(ID_ADDITEMDIALOG_EDIT5, 200, 195, 260, 30, EDITTEXT5_MAX_LENGTH);
-	CreateStaticTextControl(IDC_ADDITEMDIALOG_STATIC_TEXT1, L"Поле №1", 10, 20, 150, 30);
-	CreateStaticTextControl(IDC_ADDITEMDIALOG_STATIC_TEXT2, L"Поле №2", 10, 65, 150, 30);
-	CreateStaticTextControl(IDC_ADDITEMDIALOG_STATIC_TEXT1, L"Поле №3", 10, 110, 150, 30);
-	CreateStaticTextControl(IDC_ADDITEMDIALOG_STATIC_TEXT1, L"Поле №4", 10, 155, 150, 30);
-	CreateStaticTextControl(IDC_ADDITEMDIALOG_STATIC_TEXT1, L"Поле №5", 10, 200, 150, 30);
-	CreateWindow(L"BUTTON", L"Додати", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-		180, 250, 120, 30, Window(), reinterpret_cast<HMENU>(ID_ADDITEMDIALOG_BUTTON_ADD),
+	CreateEditTextControl(IDC_EDIT1, 200, 15, 260, 30, EDITTEXT1_MAX_LENGTH);
+	CreateEditTextControl(IDC_EDIT2, 200, 60, 260, 30, EDITTEXT2_MAX_LENGTH);
+	CreateEditTextControl(IDC_EDIT3, 200, 105, 260, 30, EDITTEXT3_MAX_LENGTH);
+	CreateEditTextControl(IDC_EDIT4, 200, 150, 260, 30, EDITTEXT4_MAX_LENGTH);
+	CreateEditTextControl(IDC_EDIT5, 200, 195, 260, 30, EDITTEXT5_MAX_LENGTH);
+	CreateStaticTextControl(IDC_ITEMDIALOG_STATIC_TEXT1, L"Поле №1", 10, 20, 150, 30);
+	CreateStaticTextControl(IDC_ITEMDIALOG_STATIC_TEXT2, L"Поле №2", 10, 65, 150, 30);
+	CreateStaticTextControl(IDC_ITEMDIALOG_STATIC_TEXT3, L"Поле №3", 10, 110, 150, 30);
+	CreateStaticTextControl(IDC_ITEMDIALOG_STATIC_TEXT4, L"Поле №4", 10, 155, 150, 30);
+	CreateStaticTextControl(IDC_ITEMDIALOG_STATIC_TEXT5, L"Поле №5", 10, 200, 150, 30);
+	CreateWindow(L"BUTTON", L"Редагувати", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+		180, 250, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(ID_EDITITEMDIALOG_BUTTON_EDIT),
 		GetModuleHandle(nullptr), nullptr);
 }
 
@@ -92,7 +94,7 @@ HWND EditItemDialog::CreateEditTextControl(DWORD id, int X, int Y, int nWidth, i
 		WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL |
 		ES_LEFT | WS_BORDER,
 		X, Y, nWidth, nHeight,
-		Window(),
+		m_hwnd,
 		reinterpret_cast<HMENU>(id),
 		GetModuleHandle(nullptr),
 		nullptr);
@@ -111,7 +113,7 @@ HWND EditItemDialog::CreateStaticTextControl(DWORD id, LPCWSTR szStr, int X, int
 		Y,
 		nWidth,
 		nHeight,
-		Window(),
+		m_hwnd,
 		reinterpret_cast<HMENU>(id),
 		GetModuleHandle(0),
 		nullptr);
@@ -121,33 +123,46 @@ HWND EditItemDialog::CreateStaticTextControl(DWORD id, LPCWSTR szStr, int X, int
 
 
 void EditItemDialog::CleanEditTextFields() {
-	SetWindowText(GetDlgItem(Window(), ID_ADDITEMDIALOG_EDIT1), L"");
-	SetWindowText(GetDlgItem(Window(), ID_ADDITEMDIALOG_EDIT2), L"");
-	SetWindowText(GetDlgItem(Window(), ID_ADDITEMDIALOG_EDIT3), L"");
-	SetWindowText(GetDlgItem(Window(), ID_ADDITEMDIALOG_EDIT4), L"");
-	SetWindowText(GetDlgItem(Window(), ID_ADDITEMDIALOG_EDIT5), L"");
+	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT1), L"");
+	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT2), L"");
+	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT3), L"");
+	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT4), L"");
+	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT5), L"");
 }
 
 
-void EditItemDialog::OnButtonAdd() {
+void EditItemDialog::OnButtonEdit() {
 	wstring wstr[5]{};
-	wstr[0].resize(GetWindowTextLength(GetDlgItem(Window(), ID_ADDITEMDIALOG_EDIT1)));
-	GetWindowText(GetDlgItem(Window(), ID_ADDITEMDIALOG_EDIT1), &wstr[0][0], wstr[0].size() + 1);
-	wstr[1].resize(GetWindowTextLength(GetDlgItem(Window(), ID_ADDITEMDIALOG_EDIT2)));
-	GetWindowText(GetDlgItem(Window(), ID_ADDITEMDIALOG_EDIT2), &wstr[1][0], wstr[1].size() + 1);
-	wstr[2].resize(GetWindowTextLength(GetDlgItem(Window(), ID_ADDITEMDIALOG_EDIT3)));
-	GetWindowText(GetDlgItem(Window(), ID_ADDITEMDIALOG_EDIT3), &wstr[2][0], wstr[2].size() + 1);
-	wstr[3].resize(GetWindowTextLength(GetDlgItem(Window(), ID_ADDITEMDIALOG_EDIT4)));
-	GetWindowText(GetDlgItem(Window(), ID_ADDITEMDIALOG_EDIT4), &wstr[3][0], wstr[3].size() + 1);
-	wstr[4].resize(GetWindowTextLength(GetDlgItem(Window(), ID_ADDITEMDIALOG_EDIT5)));
-	GetWindowText(GetDlgItem(Window(), ID_ADDITEMDIALOG_EDIT5), &wstr[4][0], wstr[4].size() + 1);
+	wstr[0].resize(GetWindowTextLength(GetDlgItem(m_hwnd, IDC_EDIT1)));
+	GetWindowText(GetDlgItem(m_hwnd, IDC_EDIT1), &wstr[0][0], wstr[0].size() + 1);
+	wstr[1].resize(GetWindowTextLength(GetDlgItem(m_hwnd, IDC_EDIT2)));
+	GetWindowText(GetDlgItem(m_hwnd, IDC_EDIT2), &wstr[1][0], wstr[1].size() + 1);
+	wstr[2].resize(GetWindowTextLength(GetDlgItem(m_hwnd, IDC_EDIT3)));
+	GetWindowText(GetDlgItem(m_hwnd, IDC_EDIT3), &wstr[2][0], wstr[2].size() + 1);
+	wstr[3].resize(GetWindowTextLength(GetDlgItem(m_hwnd, IDC_EDIT4)));
+	GetWindowText(GetDlgItem(m_hwnd, IDC_EDIT4), &wstr[3][0], wstr[3].size() + 1);
+	wstr[4].resize(GetWindowTextLength(GetDlgItem(m_hwnd, IDC_EDIT5)));
+	GetWindowText(GetDlgItem(m_hwnd, IDC_EDIT5), &wstr[4][0], wstr[4].size() + 1);
 
 	if (wstr[0] == L"" || wstr[1] == L"" || wstr[2] == L"" || wstr[3] == L"" || wstr[4] == L"") {
-		MessageBox(Window(), L"Всі поля повинні бути заповнені", L"Попередження", MB_OK | MB_ICONWARNING);
+		MessageBox(m_hwnd, L"Всі поля повинні бути заповнені", L"Попередження", MB_OK | MB_ICONWARNING);
 		return;
 	}
 
-	pData->push_back({ wstr[0], wstr[1], wstr[2], wstr[3], wstr[4] });
-	MessageBox(Window(), L"Об'єкт успішно додано до таблиці!", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
-	CleanEditTextFields();
+	pData->at(iItemToEdit) = { wstr[0], wstr[1], wstr[2], wstr[3], wstr[4] };
+	MessageBox(m_hwnd, L"Об'єкт успішно змінено!", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
+	endLoop = true;
+	//CleanEditTextFields();
+}
+
+
+void EditItemDialog::InitializeContent(int iItem) {
+	//for (size_t i = 0; i < pData->at(iItem).size(); ++i) {
+	//	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT1 + i), pData->at(iItem)[i].c_str());
+	//}
+	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT1), pData->at(iItem)[0].c_str());
+	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT2), pData->at(iItem)[1].c_str());
+	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT3), pData->at(iItem)[2].c_str());
+	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT4), pData->at(iItem)[3].c_str());
+	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT5), pData->at(iItem)[4].c_str());
 }

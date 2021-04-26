@@ -10,20 +10,26 @@ using namespace std;
 
 class Table {
 private:
+	UINT tableOffsetX{};
+	HWND hParent{};
+	DWORD tableId{};
 	vector<vector<wstring>> data {};
 	HWND lstView {};
 	void InitColumns();
 	void InitItems();
 	
 public:
-	Table(HWND parent, DWORD id);
+	Table(HWND parent, DWORD id, UINT tableOffsetX);
 	~Table();
 	vector<vector<wstring>>& GetData(); //add noexcept
 	HWND GetListViewHandle() const;
 	LRESULT TableNotify(LPARAM);
-	void ResizeTable(HWND parent);
-	void CreateTable(HWND parent, DWORD id);
+	void ResizeTable();
+	void CreateTable();
 	void UpdateItems();
+	void DeleteSelected();
+	int GetItemToEdit();
+	void ClearData();
 };
 
 #endif
