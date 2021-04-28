@@ -139,7 +139,7 @@ void Table::DeleteSelected() {
 		}
 		ListView_SetItemCount(lstView, data.size() - iVec.size());
 		for(size_t i = 0; i < iVec.size(); ++i)
-			data.erase(data.begin() + iVec[i] - i);
+			data.erase(data.begin() + (iVec[i] - i));
 		MessageBox(hParent, L"Елементи успішно видалено", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
 	}
 }

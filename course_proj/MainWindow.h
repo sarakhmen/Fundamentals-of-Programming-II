@@ -26,6 +26,10 @@ private:
 	void OnButtonAddItem();
 	void OnButtonEditItem();
 	void OnButtonClear();
+	void OnButtonLoadData();
+	void OnButtonSaveData();
+	void PipeTableDataToFile(const wstring& wcstFileName, DWORD dwDesiredAccess, DWORD dwCreationDisposition);
+	void ConstructTable(const wstring& wcstBuffer);
 public:
 	MainWindow();
 	~MainWindow();

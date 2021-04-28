@@ -2,7 +2,7 @@
 
 size_t GetFileContent(const wstring& cstFileName, wstring& wstBuffer)
 {
-	HANDLE hFile = CreateFile(cstFileName.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+	HANDLE hFile = CreateFile(cstFileName.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 	DWORD dwBytesRead = 0;
 	if (hFile != INVALID_HANDLE_VALUE) {
 		DWORD dwFileSize = GetFileSize(hFile, nullptr);
@@ -16,8 +16,8 @@ size_t GetFileContent(const wstring& cstFileName, wstring& wstBuffer)
 	return dwBytesRead;
 }
 
-size_t PutFileContent(const wstring& cstFileName, const wstring& wstBuffer, DWORD dwDesiredAccess) {
-	HANDLE hFile = CreateFile(cstFileName.c_str(), dwDesiredAccess, FILE_SHARE_READ, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+size_t PutFileContent(const wstring& wcstFileName, const wstring& wstBuffer, DWORD dwDesiredAccess, DWORD dwCreationDisposition) {
+	HANDLE hFile = CreateFileW(wcstFileName.c_str(), dwDesiredAccess, FILE_SHARE_READ, nullptr, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL, nullptr);
 	DWORD dwBytesWrite = 0;
 	if (hFile != INVALID_HANDLE_VALUE) {
 		WriteFile(hFile, &wstBuffer[0], wstBuffer.size() * sizeof(wchar_t), &dwBytesWrite, nullptr);
