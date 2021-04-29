@@ -18,6 +18,10 @@ MainWindow::~MainWindow() {
 		DestroyWindow(editItemDialog->Window());
 		delete editItemDialog;
 	}
+	if (findItemDialog) {
+		DestroyWindow(findItemDialog->Window());
+		delete findItemDialog;
+	}
 }
 
 
@@ -76,7 +80,7 @@ BOOL MainWindow::CreateButtons() {
 		10, 185, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(ID_BUTTON_EDIT_ITEM), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if (!CreateWindow(L"BUTTON", L"Пошук", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-		10, 220, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(ID_BUTTON5), GetModuleHandle(nullptr), nullptr))
+		10, 220, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(ID_BUTTON_FIND_ITEM), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if (!CreateWindow(L"BUTTON", L"Зберегти", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
 		10, 255, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_SAVE), GetModuleHandle(nullptr), nullptr))
@@ -115,12 +119,8 @@ void MainWindow::OnButtonClicked(WPARAM wParam, LPARAM lParam) {
 		OnButtonClear();
 		break;
 
-	case ID_BUTTON5:
-		PrintConsole(L"BUTTON5 pressed\n");
-		MessageBox(m_hwnd,
-			L"Functionality isn't implemented",
-			L"Error while clicking",
-			MB_ICONERROR);
+	case ID_BUTTON_FIND_ITEM:
+		OnButtonFindItem();
 		break;
 
 	case IDC_BUTTON_SAVE:
@@ -147,6 +147,11 @@ void MainWindow::OnCreate() {
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 		0, 600, 350, 500, 340, m_hwnd))
 		PrintConsole(L"Error while creating EditItemDialog\n");
+	findItemDialog = new FindItemDialog{ m_hwnd , &pTable->GetData() };
+	if (!findItemDialog->Create(L"Find item",
+		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
+		0, 600, 350, 500, 340, m_hwnd))
+		PrintConsole(L"Error while creating FindItemDialog\n");
 }
 
 
@@ -331,4 +336,12 @@ void MainWindow::ConstructTable(const wstring& wcstBuffer) {
 		}
 	}
 	PrintConsole(L"Table created");
+}
+
+
+void MainWindow::OnButtonFindItem() {
+	PrintConsole(L"FindItemDialog created\n");
+	findItemDialog->GetUserFind();
+	pTable->UpdateItems();
+	PrintConsole(L"FindItemDialog destroyed\n");
 }

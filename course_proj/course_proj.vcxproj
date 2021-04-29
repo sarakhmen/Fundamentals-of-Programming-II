@@ -148,6 +148,7 @@
     <ClCompile Include="AddItemDialog.cpp" />
     <ClCompile Include="EditItemDialog.cpp" />
     <ClCompile Include="FileReadWrite.cpp" />
+    <ClCompile Include="FindItemDialog.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Table.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="BaseWindow.h" />
     <ClInclude Include="EditItemDialog.h" />
     <ClInclude Include="FileReadWrite.h" />
+    <ClInclude Include="FindItemDialog.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Table.h" />
