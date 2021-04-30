@@ -14,6 +14,7 @@ private:
 	HWND hParent{};
 	DWORD tableId{};
 	vector<vector<wstring>> data {};
+	vector<int> findMask{};
 	HWND lstView {};
 	void InitColumns();
 	void InitItems();
@@ -29,6 +30,7 @@ public:
 	void UpdateItems();
 	void DeleteSelected();
 	int GetItemToEdit();
+	vector<int>& GetFindMask();
 	void ClearData();
 };
 

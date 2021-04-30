@@ -65,22 +65,22 @@ BOOL MainWindow::CreateButtons() {
 		10, 10, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_LOAD_DATA), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if (!CreateWindow(L"BUTTON", L"Додати", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-		10, 45, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(ID_BUTTON_ADD_ITEM), GetModuleHandle(nullptr), nullptr))
+		10, 45, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_ADD_ITEM), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if (!CreateWindow(L"BUTTON", L"Звіт", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-		10, 80, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(ID_BUTTON2), GetModuleHandle(nullptr), nullptr))
+		10, 80, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON2), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if (!CreateWindow(L"BUTTON", L"Видалити виділені", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-		10, 115, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(ID_BUTTON_DEL_SELECTED), GetModuleHandle(nullptr), nullptr))
+		10, 115, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_DEL_SELECTED), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if (!CreateWindow(L"BUTTON", L"Очистити таблицю", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
 		10, 150, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_CLEAR), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if(!CreateWindow(L"BUTTON", L"Редагувати", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-		10, 185, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(ID_BUTTON_EDIT_ITEM), GetModuleHandle(nullptr), nullptr))
+		10, 185, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_EDIT_ITEM), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if (!CreateWindow(L"BUTTON", L"Пошук", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-		10, 220, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(ID_BUTTON_FIND_ITEM), GetModuleHandle(nullptr), nullptr))
+		10, 220, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_FIND_ITEM), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if (!CreateWindow(L"BUTTON", L"Зберегти", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
 		10, 255, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_SAVE), GetModuleHandle(nullptr), nullptr))
@@ -95,11 +95,11 @@ void MainWindow::OnButtonClicked(WPARAM wParam, LPARAM lParam) {
 		OnButtonLoadData();
 		break;
 
-	case ID_BUTTON_ADD_ITEM:
+	case IDC_BUTTON_ADD_ITEM:
 		OnButtonAddItem();
 		break;
 
-	case ID_BUTTON2:
+	case IDC_BUTTON2:
 		PrintConsole(L"BUTTON2 pressed\n");
 		MessageBox(m_hwnd,
 			L"Functionality isn't implemented",
@@ -107,11 +107,11 @@ void MainWindow::OnButtonClicked(WPARAM wParam, LPARAM lParam) {
 			MB_ICONERROR);
 		break;
 
-	case ID_BUTTON_DEL_SELECTED:
+	case IDC_BUTTON_DEL_SELECTED:
 		OnDeleteSelected();
 		break;
 
-	case ID_BUTTON_EDIT_ITEM:
+	case IDC_BUTTON_EDIT_ITEM:
 		OnButtonEditItem();
 		break;
 
@@ -119,7 +119,7 @@ void MainWindow::OnButtonClicked(WPARAM wParam, LPARAM lParam) {
 		OnButtonClear();
 		break;
 
-	case ID_BUTTON_FIND_ITEM:
+	case IDC_BUTTON_FIND_ITEM:
 		OnButtonFindItem();
 		break;
 
@@ -136,7 +136,7 @@ void MainWindow::OnCreate() {
 		system("pause");
 		PostQuitMessage(0);
 	}
-	pTable = new Table{ m_hwnd, ID_TABLE, TABLE_OFFSET_X };
+	pTable = new Table{ m_hwnd, IDC_TABLE, TABLE_OFFSET_X };
 	addItemDialog = new AddItemDialog{ m_hwnd , &pTable->GetData()};
 	if (!addItemDialog->Create(L"Add item", 
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
@@ -147,7 +147,7 @@ void MainWindow::OnCreate() {
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 		0, 600, 350, 500, 340, m_hwnd))
 		PrintConsole(L"Error while creating EditItemDialog\n");
-	findItemDialog = new FindItemDialog{ m_hwnd , &pTable->GetData() };
+	findItemDialog = new FindItemDialog{ m_hwnd , &pTable->GetData(), &pTable->GetFindMask() };
 	if (!findItemDialog->Create(L"Find item",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 		0, 600, 350, 500, 340, m_hwnd))
@@ -341,7 +341,18 @@ void MainWindow::ConstructTable(const wstring& wcstBuffer) {
 
 void MainWindow::OnButtonFindItem() {
 	PrintConsole(L"FindItemDialog created\n");
-	findItemDialog->GetUserFind();
-	pTable->UpdateItems();
+	if (pTable->GetData().size() == 0) {
+		MessageBox(m_hwnd, L"Таблиця пуста", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
+	}
+	else if (pTable->GetFindMask().size() == 0) {
+		SetWindowText(GetDlgItem(m_hwnd, IDC_BUTTON_FIND_ITEM), L"Закінчити пошук");
+		findItemDialog->GetUserFind();
+		pTable->UpdateItems();
+	}
+	else {
+		SetWindowText(GetDlgItem(m_hwnd, IDC_BUTTON_FIND_ITEM), L"Пошук");
+		pTable->GetFindMask().clear();
+		pTable->UpdateItems();
+	}
 	PrintConsole(L"FindItemDialog destroyed\n");
 }

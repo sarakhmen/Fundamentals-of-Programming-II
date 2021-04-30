@@ -1,8 +1,9 @@
 #include "FindItemDialog.h"
 
-FindItemDialog::FindItemDialog(HWND hwndParent, vector<vector<wstring>>* pData) {
+FindItemDialog::FindItemDialog(HWND hwndParent, vector<vector<wstring>>* pData, vector<int>* pFindMask) {
 	parent = hwndParent;
 	this->pData = pData;
+	this->pFindMask = pFindMask;
 }
 
 
@@ -26,19 +27,19 @@ LRESULT FindItemDialog::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDC_FINDITEMDIALOG_BUTTON1:
-			OnButtonFind(IDC_FINDITEMDIALOG_BUTTON1, MAX_STR_LEN_COL1, 0);
+			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL1, 0);
 			break;
 		case IDC_FINDITEMDIALOG_BUTTON2:
-			OnButtonFind(IDC_FINDITEMDIALOG_BUTTON2, MAX_STR_LEN_COL2, 1);
+			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL2, 1);
 			break;
 		case IDC_FINDITEMDIALOG_BUTTON3:
-			OnButtonFind(IDC_FINDITEMDIALOG_BUTTON3, MAX_STR_LEN_COL3, 2);
+			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL3, 2);
 			break;
 		case IDC_FINDITEMDIALOG_BUTTON4:
-			OnButtonFind(IDC_FINDITEMDIALOG_BUTTON4, MAX_STR_LEN_COL4, 3);
+			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL4, 3);
 			break;
 		case IDC_FINDITEMDIALOG_BUTTON5:
-			OnButtonFind(IDC_FINDITEMDIALOG_BUTTON5, MAX_STR_LEN_COL5, 4);
+			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL5, 4);
 			break;
 		}
 
@@ -121,7 +122,13 @@ void FindItemDialog::OnButtonFind(DWORD id, int maxTextLength, int iColumn) {
 		return;
 	}
 
-	PrintConsole(wstr + L'\n');
+	for (size_t i = 0; i < pData->size(); ++i) {
+		if (_wcsnicmp(wstr.c_str(), pData->at(i)[iColumn].c_str(), fieldLength) == 0) {
+			pFindMask->push_back(i);
+			PrintConsole(L"finded " + pData->at(i)[iColumn] + L'\n');
+		}
+	}
+
 	MessageBox(m_hwnd, L"Пошук виконано!", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
 	endLoop = true;
 	//CleanFindTextFields();

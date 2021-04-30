@@ -104,7 +104,10 @@ LRESULT Table::TableNotify(LPARAM lParam) {
 	case LVN_GETDISPINFO: {
 		NMLVDISPINFO* lpdi = reinterpret_cast<NMLVDISPINFO*>(lParam);
 		if (lpdi->item.mask & LVIF_TEXT)
-			lpdi->item.pszText = &data[lpdi->item.iItem][lpdi->item.iSubItem][0];
+			if(findMask.size() == 0)
+				lpdi->item.pszText = &data[lpdi->item.iItem][lpdi->item.iSubItem][0];
+			else
+				lpdi->item.pszText = &data[findMask[lpdi->item.iItem]][lpdi->item.iSubItem][0];
 		}
 		break;
 
@@ -123,7 +126,11 @@ LRESULT Table::TableNotify(LPARAM lParam) {
 
 
 void Table::UpdateItems() {
-	ListView_SetItemCount(lstView, data.size());
+	if(findMask.size() == 0)
+		ListView_SetItemCount(lstView, data.size());
+	else {
+		ListView_SetItemCount(lstView, findMask.size());
+	}
 }
 
 
@@ -163,4 +170,9 @@ int Table::GetItemToEdit() {
 void Table::ClearData() {
 	ListView_SetItemCount(lstView, 0);
 	data.clear();
+}
+
+
+vector<int>& Table::GetFindMask() {
+	return findMask;
 }
