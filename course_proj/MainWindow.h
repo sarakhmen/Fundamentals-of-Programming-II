@@ -11,12 +11,14 @@
 #include "AddItemDialog.h"
 #include "EditItemDialog.h"
 #include "FindItemDialog.h"
+#include "Data.h"
 #pragma comment(lib,"Comctl32.lib")
 using namespace std;
 
 
 class MainWindow : public BaseWindow<MainWindow> {
 private:
+	Data data{};
 	EditItemDialog* editItemDialog {};
 	AddItemDialog* addItemDialog {};
 	FindItemDialog* findItemDialog{};

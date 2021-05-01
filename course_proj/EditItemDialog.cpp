@@ -1,6 +1,6 @@
 #include "EditItemDialog.h"
 
-EditItemDialog::EditItemDialog(HWND hwndParent, vector<vector<wstring>>* pData) {
+EditItemDialog::EditItemDialog(HWND hwndParent, Data* pData) {
 	parent = hwndParent;
 	this->pData = pData;
 }
@@ -149,7 +149,7 @@ void EditItemDialog::OnButtonEdit() {
 		return;
 	}
 
-	pData->at(iItemToEdit) = { wstr[0], wstr[1], wstr[2], wstr[3], wstr[4] };
+	(*pData)[iItemToEdit] = { wstr[0], wstr[1], wstr[2], wstr[3], wstr[4] };
 	MessageBox(m_hwnd, L"Об'єкт успішно змінено!", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
 	endLoop = true;
 	//CleanEditTextFields();
@@ -160,9 +160,9 @@ void EditItemDialog::InitializeContent(int iItem) {
 	//for (size_t i = 0; i < pData->at(iItem).size(); ++i) {
 	//	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT1 + i), pData->at(iItem)[i].c_str());
 	//}
-	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT1), pData->at(iItem)[0].c_str());
-	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT2), pData->at(iItem)[1].c_str());
-	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT3), pData->at(iItem)[2].c_str());
-	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT4), pData->at(iItem)[3].c_str());
-	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT5), pData->at(iItem)[4].c_str());
+	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT1), (*pData)[iItem][0].c_str());
+	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT2), (*pData)[iItem][1].c_str());
+	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT3), (*pData)[iItem][2].c_str());
+	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT4), (*pData)[iItem][3].c_str());
+	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT5), (*pData)[iItem][4].c_str());
 }

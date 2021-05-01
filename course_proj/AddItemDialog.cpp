@@ -1,7 +1,7 @@
 #include "AddItemDialog.h"
 
 
-AddItemDialog::AddItemDialog(HWND hwndParent, vector<vector<wstring>>* pData) {
+AddItemDialog::AddItemDialog(HWND hwndParent, Data* pData) {
 	parent = hwndParent;
 	this->pData = pData;
 }
@@ -148,7 +148,7 @@ void AddItemDialog::OnButtonAdd() {
 		return;
 	}
 
-	pData->push_back({ wstr[0], wstr[1], wstr[2], wstr[3], wstr[4] });
+	pData->pushBack({ wstr[0], wstr[1], wstr[2], wstr[3], wstr[4] });
 	MessageBox(m_hwnd, L"Об'єкт успішно додано до таблиці!", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
 	CleanEditTextFields();
 }

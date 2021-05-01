@@ -7,21 +7,21 @@
 #include "BaseWindow.h"
 #include "FileReadWrite.h"
 #include "Resource.h"
+#include "Data.h"
 using namespace std;
 
 class FindItemDialog : public BaseWindow<FindItemDialog> {
 private:
 	bool endLoop{};
 	HWND parent{};
-	vector<vector<wstring>>* pData{};
-	vector<int>* pFindMask{};
+	Data* pData{};
 	void OnCreate();
 	void MessageLoop();
 	HWND CreateFindItemButton(DWORD id, LPCWSTR szStr, int X, int Y, int nWidth, int nHeight);
 	void OnButtonFind(DWORD id, int maxTextLength, int iColumn);
 
 public:
-	FindItemDialog(HWND, vector<vector<wstring>>*, vector<int>*);
+	FindItemDialog(HWND, Data*);
 	~FindItemDialog();
 	PCWSTR ClassName() const;
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);

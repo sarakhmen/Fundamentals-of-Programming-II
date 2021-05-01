@@ -1,9 +1,10 @@
 #include "Table.h"
 
 
-Table::Table(HWND parent, DWORD id, UINT tableOffsetX){
+Table::Table(HWND parent, DWORD id, Data* data, UINT tableOffsetX){
 	hParent = parent;
 	tableId = id;
+	pData = data;
 	this->tableOffsetX = tableOffsetX;
 	CreateTable();
 	InitColumns();
@@ -13,11 +14,6 @@ Table::Table(HWND parent, DWORD id, UINT tableOffsetX){
 
 Table::~Table() {
 	CloseHandle(lstView);
-}
-
-
-vector<vector<wstring>>& Table::GetData(){
-	return this->data;
 }
 
 
@@ -73,14 +69,14 @@ void Table::InitColumns() {
 
 
 void Table::InitItems() {
-	data.push_back({ L"1first", L"1second", L"1third", L"1fourth", L"1fifth" });
-	data.push_back({ L"2first", L"2second", L"2third", L"2fourth", L"2fifth" });
-	data.push_back({ L"3first", L"3second", L"3third", L"3fourth", L"3fifth" });
-	data.push_back({ L"4first", L"4second", L"4third", L"4fourth", L"4fifth" });
-	data.push_back({ L"5first", L"5second", L"5third", L"5fourth", L"5fifth" });
-	data.push_back({ L"6first", L"6second", L"6third", L"6fourth", L"6fifth" });
-	data.push_back({ L"7first", L"7second", L"7third", L"7fourth", L"7fifth" });
-	data.push_back({ L"8first", L"8second", L"8third", L"8fourth", L"8fifth" });
+	pData->pushBack({ L"1first", L"1second", L"1third", L"1fourth", L"1fifth" });
+	pData->pushBack({ L"2first", L"2second", L"2third", L"2fourth", L"2fifth" });
+	pData->pushBack({ L"3first", L"3second", L"3third", L"3fourth", L"3fifth" });
+	pData->pushBack({ L"4first", L"4second", L"4third", L"4fourth", L"4fifth" });
+	pData->pushBack({ L"5first", L"5second", L"5third", L"5fourth", L"5fifth" });
+	pData->pushBack({ L"6first", L"6second", L"6third", L"6fourth", L"6fifth" });
+	pData->pushBack({ L"7first", L"7second", L"7third", L"7fourth", L"7fifth" });
+	pData->pushBack({ L"8first", L"8second", L"8third", L"8fourth", L"8fifth" });
 
 	/*LVITEM lvI;
 	lvI.pszText = LPSTR_TEXTCALLBACK;
@@ -104,10 +100,7 @@ LRESULT Table::TableNotify(LPARAM lParam) {
 	case LVN_GETDISPINFO: {
 		NMLVDISPINFO* lpdi = reinterpret_cast<NMLVDISPINFO*>(lParam);
 		if (lpdi->item.mask & LVIF_TEXT)
-			if(findMask.size() == 0)
-				lpdi->item.pszText = &data[lpdi->item.iItem][lpdi->item.iSubItem][0];
-			else
-				lpdi->item.pszText = &data[findMask[lpdi->item.iItem]][lpdi->item.iSubItem][0];
+			lpdi->item.pszText = &(*pData)[lpdi->item.iItem][lpdi->item.iSubItem][0];
 		}
 		break;
 
@@ -126,11 +119,7 @@ LRESULT Table::TableNotify(LPARAM lParam) {
 
 
 void Table::UpdateItems() {
-	if(findMask.size() == 0)
-		ListView_SetItemCount(lstView, data.size());
-	else {
-		ListView_SetItemCount(lstView, findMask.size());
-	}
+	ListView_SetItemCount(lstView, pData->size());
 }
 
 
@@ -144,9 +133,9 @@ void Table::DeleteSelected() {
 			iVec.push_back(iPos);
 			iPos = ListView_GetNextItem(lstView, iPos , LVNI_SELECTED);
 		}
-		ListView_SetItemCount(lstView, data.size() - iVec.size());
 		for(size_t i = 0; i < iVec.size(); ++i)
-			data.erase(data.begin() + (iVec[i] - i));
+			pData->erase(iVec[i] - i);
+		ListView_SetItemCount(lstView, pData->size());
 		MessageBox(hParent, L"Елементи успішно видалено", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
 	}
 }
@@ -164,15 +153,4 @@ int Table::GetItemToEdit() {
 		MessageBox(hParent, L"Виділіть один елемент, який потрібно редагувати", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
 	}
 	return iPos;
-}
-
-
-void Table::ClearData() {
-	ListView_SetItemCount(lstView, 0);
-	data.clear();
-}
-
-
-vector<int>& Table::GetFindMask() {
-	return findMask;
 }

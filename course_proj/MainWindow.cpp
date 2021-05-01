@@ -136,18 +136,18 @@ void MainWindow::OnCreate() {
 		system("pause");
 		PostQuitMessage(0);
 	}
-	pTable = new Table{ m_hwnd, IDC_TABLE, TABLE_OFFSET_X };
-	addItemDialog = new AddItemDialog{ m_hwnd , &pTable->GetData()};
+	pTable = new Table{ m_hwnd, IDC_TABLE, &data, TABLE_OFFSET_X };
+	addItemDialog = new AddItemDialog{ m_hwnd , &data};
 	if (!addItemDialog->Create(L"Add item", 
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 		0, 600, 350, 500, 340, m_hwnd))
 		PrintConsole(L"Error while creating AddItemDialog\n");
-	editItemDialog = new EditItemDialog{ m_hwnd , &pTable->GetData() };
+	editItemDialog = new EditItemDialog{ m_hwnd , &data };
 	if (!editItemDialog->Create(L"Edit item",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 		0, 600, 350, 500, 340, m_hwnd))
 		PrintConsole(L"Error while creating EditItemDialog\n");
-	findItemDialog = new FindItemDialog{ m_hwnd , &pTable->GetData(), &pTable->GetFindMask() };
+	findItemDialog = new FindItemDialog{ m_hwnd , &data };
 	if (!findItemDialog->Create(L"Find item",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 		0, 600, 350, 500, 340, m_hwnd))
@@ -184,11 +184,11 @@ void MainWindow::OnDeleteSelected() {
 
 void MainWindow::OnButtonClear() {
 	PrintConsole(L"Clear start\n");
-	if(pTable->GetData().size() == 0)
+	if(data.size() == 0)
 		MessageBox(m_hwnd, L"Таблиця пуста", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
 	else if (MessageBox(m_hwnd, L"Ви дійсно хочете видалити всі елементи?",
 		L"Підтвердження", MB_OKCANCEL) == IDOK) {
-		pTable->ClearData();
+		data.clear();
 		pTable->UpdateItems();
 		MessageBox(m_hwnd, L"Всі елементи видалено", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
 	}
@@ -227,7 +227,7 @@ void MainWindow::OnButtonLoadData() {
 		if (wcscmp(&wstrFile[iPos], wstrExtension.c_str()) == 0) {	//and refers to our file
 			PrintConsole(L"Reading\n");
 			wstring wstBuffer{};
-			pTable->ClearData();
+			data.clear();
 			GetFileContent(ofn.lpstrFile, wstBuffer);
 			ConstructTable(wstBuffer);
 			pTable->UpdateItems();
@@ -309,28 +309,26 @@ void MainWindow::OnButtonSaveData() {
 
 
 void MainWindow::PipeTableDataToFile(const wstring& wcstFileName, DWORD dwDesiredAccess, DWORD dwCreationDisposition) {
-	vector<vector<wstring>>& refData = pTable->GetData();
 	PrintConsole(wcstFileName + L'\n');
-	for (size_t i = 0; i < refData.size(); ++i) {
-		for (size_t j = 0; j < refData[0].size(); ++j) {
-			PrintConsole(refData[i][j] + L'\n');
-			PutFileContent(wcstFileName, refData[i][j] + L'\n', dwDesiredAccess, dwCreationDisposition);
+	for (size_t i = 0; i < data.size(); ++i) {
+		for (size_t j = 0; j < data[0].size(); ++j) {
+			PrintConsole(data[i][j] + L'\n');
+			PutFileContent(wcstFileName, data[i][j] + L'\n', dwDesiredAccess, dwCreationDisposition);
 		}
 	}
 }
 
 
 void MainWindow::ConstructTable(const wstring& wcstBuffer) {
-	vector<vector<wstring>>& refData = pTable->GetData();
 	size_t wstSize = wcstBuffer.size();
 	size_t iPosPrev{},
 		iPosNext{};
 
 	iPosNext = wcstBuffer.find(L'\n', iPosPrev);
 	for (size_t i = 0; iPosNext < wstSize - 1; ++i) { //which corresponds to the file content syntax
-		refData.push_back(vector<wstring>{});
+		data.pushBack(vector<wstring>{});
 		for (size_t j = 0; (iPosNext < (wstSize - 1)) && (j < TABLE_COL_NUMBER); ++j) {
-			refData[i].push_back(wcstBuffer.substr(iPosPrev, iPosNext - iPosPrev));
+			data[i].push_back(wcstBuffer.substr(iPosPrev, iPosNext - iPosPrev));
 			iPosPrev = iPosNext + 1;
 			iPosNext = wcstBuffer.find(L'\n', iPosPrev);
 		}
@@ -341,17 +339,18 @@ void MainWindow::ConstructTable(const wstring& wcstBuffer) {
 
 void MainWindow::OnButtonFindItem() {
 	PrintConsole(L"FindItemDialog created\n");
-	if (pTable->GetData().size() == 0) {
+	if (data.size() == 0) {
 		MessageBox(m_hwnd, L"Таблиця пуста", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
 	}
-	else if (pTable->GetFindMask().size() == 0) {
+	else if (!data.isMask()) {
 		SetWindowText(GetDlgItem(m_hwnd, IDC_BUTTON_FIND_ITEM), L"Закінчити пошук");
 		findItemDialog->GetUserFind();
+		data.setMask(true);
 		pTable->UpdateItems();
 	}
 	else {
 		SetWindowText(GetDlgItem(m_hwnd, IDC_BUTTON_FIND_ITEM), L"Пошук");
-		pTable->GetFindMask().clear();
+		data.setMask(false);
 		pTable->UpdateItems();
 	}
 	PrintConsole(L"FindItemDialog destroyed\n");

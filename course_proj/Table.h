@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <exception>
+#include "Data.h"
 #pragma comment(lib,"Comctl32.lib")
 using namespace std;
 
@@ -13,16 +14,14 @@ private:
 	UINT tableOffsetX{};
 	HWND hParent{};
 	DWORD tableId{};
-	vector<vector<wstring>> data {};
-	vector<int> findMask{};
+	Data* pData{};
 	HWND lstView {};
 	void InitColumns();
 	void InitItems();
 	
 public:
-	Table(HWND parent, DWORD id, UINT tableOffsetX);
+	Table(HWND parent, DWORD id, Data* data, UINT tableOffsetX);
 	~Table();
-	vector<vector<wstring>>& GetData(); //add noexcept
 	HWND GetListViewHandle() const;
 	LRESULT TableNotify(LPARAM);
 	void ResizeTable();
@@ -30,8 +29,6 @@ public:
 	void UpdateItems();
 	void DeleteSelected();
 	int GetItemToEdit();
-	vector<int>& GetFindMask();
-	void ClearData();
 };
 
 #endif

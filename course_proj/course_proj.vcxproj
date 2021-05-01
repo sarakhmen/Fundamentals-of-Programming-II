@@ -146,6 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AddItemDialog.cpp" />
+    <ClCompile Include="Data.cpp" />
     <ClCompile Include="EditItemDialog.cpp" />
     <ClCompile Include="FileReadWrite.cpp" />
     <ClCompile Include="FindItemDialog.cpp" />
@@ -159,6 +160,7 @@
   <ItemGroup>
     <ClInclude Include="AddItemDialog.h" />
     <ClInclude Include="BaseWindow.h" />
+    <ClInclude Include="Data.h" />
     <ClInclude Include="EditItemDialog.h" />
     <ClInclude Include="FileReadWrite.h" />
     <ClInclude Include="FindItemDialog.h" />

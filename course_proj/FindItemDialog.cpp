@@ -1,9 +1,8 @@
 #include "FindItemDialog.h"
 
-FindItemDialog::FindItemDialog(HWND hwndParent, vector<vector<wstring>>* pData, vector<int>* pFindMask) {
+FindItemDialog::FindItemDialog(HWND hwndParent, Data* pData) {
 	parent = hwndParent;
 	this->pData = pData;
-	this->pFindMask = pFindMask;
 }
 
 
@@ -123,9 +122,9 @@ void FindItemDialog::OnButtonFind(DWORD id, int maxTextLength, int iColumn) {
 	}
 
 	for (size_t i = 0; i < pData->size(); ++i) {
-		if (_wcsnicmp(wstr.c_str(), pData->at(i)[iColumn].c_str(), fieldLength) == 0) {
-			pFindMask->push_back(i);
-			PrintConsole(L"finded " + pData->at(i)[iColumn] + L'\n');
+		if (_wcsnicmp(wstr.c_str(), (*pData)[i][iColumn].c_str(), fieldLength) == 0) {
+			pData->pushMaskIndex(i);
+			PrintConsole(L"finded " + (*pData)[i][iColumn] + L'\n');
 		}
 	}
 
