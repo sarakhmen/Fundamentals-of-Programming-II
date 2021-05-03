@@ -7,7 +7,7 @@
 
 #define IDC_BUTTON_LOAD_DATA 1000
 #define IDC_BUTTON_ADD_ITEM 1001
-#define IDC_BUTTON2 1002
+#define IDC_BUTTON_REPORT 1002
 #define IDC_BUTTON_DEL_SELECTED 1003
 #define IDC_BUTTON_EDIT_ITEM 1004
 #define IDC_BUTTON_FIND_ITEM 1005
@@ -46,15 +46,13 @@
 //#define TEXT_LABEL4 L"Поле №4"
 //#define TEXT_LABEL5 L"Поле №5"
 
+#define MAX_STR_LEN_COL0 40
 #define MAX_STR_LEN_COL1 40
 #define MAX_STR_LEN_COL2 40
 #define MAX_STR_LEN_COL3 40
 #define MAX_STR_LEN_COL4 40
-#define MAX_STR_LEN_COL5 40
-
-
-
-
+const int MAX_STR_LEN_COL[TABLE_COL_NUMBER] = { MAX_STR_LEN_COL0 , MAX_STR_LEN_COL1,
+	MAX_STR_LEN_COL2, MAX_STR_LEN_COL3, MAX_STR_LEN_COL4 };
 
 #endif
 // Next default values for new objects

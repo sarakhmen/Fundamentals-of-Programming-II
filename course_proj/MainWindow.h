@@ -2,6 +2,7 @@
 #define _MAIN_WINDOW_H
 #include <Windows.h>
 #include <CommCtrl.h>
+#include <shellapi.h>
 #include <string>
 #include <vector>
 #include "BaseWindow.h"
@@ -33,6 +34,8 @@ private:
 	void OnButtonLoadData();
 	void OnButtonSaveData();
 	void OnButtonFindItem();
+	void OnButtonReport();
+	void FormPeport(const wstring& wcstFileName, DWORD dwDesiredAccess, DWORD dwCreationDisposition);
 	void PipeTableDataToFile(const wstring& wcstFileName, DWORD dwDesiredAccess, DWORD dwCreationDisposition);
 	void ConstructTable(const wstring& wcstBuffer);
 public:

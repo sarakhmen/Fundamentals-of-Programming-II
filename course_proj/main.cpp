@@ -116,7 +116,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR szCmdLine, int nCmdSho
 //if (FAILED(hFile))
 //{
 //	wstring mes = L"ouch\n";
-//	WriteConsole(stdOut, mes.c_str(), mes.size(), nullptr, nullptr);
+//	WriteConsole(stdOut, mes.c_str(), mes.relative_size(), nullptr, nullptr);
 //	system("pause");
 //	return 2;
 //}
@@ -126,7 +126,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR szCmdLine, int nCmdSho
 //WriteFile(
 //	hFile,
 //	strText.c_str(),
-//	strText.size() * sizeof(WCHAR),
+//	strText.relative_size() * sizeof(WCHAR),
 //	&bytesWritten,
 //	nullptr);
 //WriteConsole(stdOut, strText.c_str(), strText.length(), &bytesWritten, nullptr);

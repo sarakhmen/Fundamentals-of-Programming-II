@@ -71,11 +71,11 @@ void EditItemDialog::MessageLoop() {
 void EditItemDialog::OnCreate() {
 	PrintConsole(L"ON_CREATE\n");
 	//check if creation is successful
-	CreateEditTextControl(IDC_EDIT1, 200, 15, 260, 30, MAX_STR_LEN_COL1);
-	CreateEditTextControl(IDC_EDIT2, 200, 60, 260, 30, MAX_STR_LEN_COL2);
-	CreateEditTextControl(IDC_EDIT3, 200, 105, 260, 30, MAX_STR_LEN_COL3);
-	CreateEditTextControl(IDC_EDIT4, 200, 150, 260, 30, MAX_STR_LEN_COL4);
-	CreateEditTextControl(IDC_EDIT5, 200, 195, 260, 30, MAX_STR_LEN_COL5);
+	CreateEditTextControl(IDC_EDIT1, 200, 15, 260, 30, MAX_STR_LEN_COL0);
+	CreateEditTextControl(IDC_EDIT2, 200, 60, 260, 30, MAX_STR_LEN_COL1);
+	CreateEditTextControl(IDC_EDIT3, 200, 105, 260, 30, MAX_STR_LEN_COL2);
+	CreateEditTextControl(IDC_EDIT4, 200, 150, 260, 30, MAX_STR_LEN_COL3);
+	CreateEditTextControl(IDC_EDIT5, 200, 195, 260, 30, MAX_STR_LEN_COL4);
 	CreateStaticTextControl(IDC_ITEMDIALOG_STATIC_TEXT1, L"Поле №1", 10, 20, 150, 30);
 	CreateStaticTextControl(IDC_ITEMDIALOG_STATIC_TEXT2, L"Поле №2", 10, 65, 150, 30);
 	CreateStaticTextControl(IDC_ITEMDIALOG_STATIC_TEXT3, L"Поле №3", 10, 110, 150, 30);
@@ -157,7 +157,7 @@ void EditItemDialog::OnButtonEdit() {
 
 
 void EditItemDialog::InitializeContent(int iItem) {
-	//for (size_t i = 0; i < pData->at(iItem).size(); ++i) {
+	//for (size_t i = 0; i < pData->at(iItem).relative_size(); ++i) {
 	//	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT1 + i), pData->at(iItem)[i].c_str());
 	//}
 	SetWindowText(GetDlgItem(m_hwnd, IDC_EDIT1), (*pData)[iItem][0].c_str());

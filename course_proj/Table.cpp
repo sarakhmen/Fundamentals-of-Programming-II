@@ -67,7 +67,7 @@ void Table::InitColumns() {
 	}
 }
 
-
+	
 void Table::InitItems() {
 	pData->pushBack({ L"1first", L"1second", L"1third", L"1fourth", L"1fifth" });
 	pData->pushBack({ L"2first", L"2second", L"2third", L"2fourth", L"2fifth" });
@@ -119,7 +119,7 @@ LRESULT Table::TableNotify(LPARAM lParam) {
 
 
 void Table::UpdateItems() {
-	ListView_SetItemCount(lstView, pData->size());
+	ListView_SetItemCount(lstView, pData->relative_size());
 }
 
 
@@ -135,7 +135,7 @@ void Table::DeleteSelected() {
 		}
 		for(size_t i = 0; i < iVec.size(); ++i)
 			pData->erase(iVec[i] - i);
-		ListView_SetItemCount(lstView, pData->size());
+		ListView_SetItemCount(lstView, pData->relative_size());
 		MessageBox(hParent, L"Елементи успішно видалено", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
 	}
 }

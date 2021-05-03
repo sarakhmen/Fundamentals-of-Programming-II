@@ -68,7 +68,7 @@ BOOL MainWindow::CreateButtons() {
 		10, 45, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_ADD_ITEM), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if (!CreateWindow(L"BUTTON", L"Звіт", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-		10, 80, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON2), GetModuleHandle(nullptr), nullptr))
+		10, 80, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_REPORT), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if (!CreateWindow(L"BUTTON", L"Видалити виділені", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
 		10, 115, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_DEL_SELECTED), GetModuleHandle(nullptr), nullptr))
@@ -99,12 +99,8 @@ void MainWindow::OnButtonClicked(WPARAM wParam, LPARAM lParam) {
 		OnButtonAddItem();
 		break;
 
-	case IDC_BUTTON2:
-		PrintConsole(L"BUTTON2 pressed\n");
-		MessageBox(m_hwnd,
-			L"Functionality isn't implemented",
-			L"Error while clicking",
-			MB_ICONERROR);
+	case IDC_BUTTON_REPORT:
+		OnButtonReport();
 		break;
 
 	case IDC_BUTTON_DEL_SELECTED:
@@ -184,7 +180,7 @@ void MainWindow::OnDeleteSelected() {
 
 void MainWindow::OnButtonClear() {
 	PrintConsole(L"Clear start\n");
-	if(data.size() == 0)
+	if(data.relative_size() == 0)
 		MessageBox(m_hwnd, L"Таблиця пуста", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
 	else if (MessageBox(m_hwnd, L"Ви дійсно хочете видалити всі елементи?",
 		L"Підтвердження", MB_OKCANCEL) == IDOK) {
@@ -198,6 +194,10 @@ void MainWindow::OnButtonClear() {
 
 void MainWindow::OnButtonLoadData() {
 	PrintConsole(L"Loading table blah blah blah...\n");
+	if(data.isMask()){
+		MessageBox(m_hwnd, L"Закінчте пошук перед тим як завантажити нові дані!", L"Помилка", MB_OK | MB_ICONERROR);
+		return;
+	}
 	OPENFILENAME ofn{};
 	wstring wstrFile;
 	wstrFile.resize(MAX_PATH);
@@ -310,7 +310,7 @@ void MainWindow::OnButtonSaveData() {
 
 void MainWindow::PipeTableDataToFile(const wstring& wcstFileName, DWORD dwDesiredAccess, DWORD dwCreationDisposition) {
 	PrintConsole(wcstFileName + L'\n');
-	for (size_t i = 0; i < data.size(); ++i) {
+	for (size_t i = 0; i < data.relative_size(); ++i) {
 		for (size_t j = 0; j < data[0].size(); ++j) {
 			PrintConsole(data[i][j] + L'\n');
 			PutFileContent(wcstFileName, data[i][j] + L'\n', dwDesiredAccess, dwCreationDisposition);
@@ -339,7 +339,7 @@ void MainWindow::ConstructTable(const wstring& wcstBuffer) {
 
 void MainWindow::OnButtonFindItem() {
 	PrintConsole(L"FindItemDialog created\n");
-	if (data.size() == 0) {
+	if (data.real_size() == 0) {
 		MessageBox(m_hwnd, L"Таблиця пуста", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
 	}
 	else if (!data.isMask()) {
@@ -354,4 +354,121 @@ void MainWindow::OnButtonFindItem() {
 		pTable->UpdateItems();
 	}
 	PrintConsole(L"FindItemDialog destroyed\n");
+}
+
+
+void MainWindow::OnButtonReport() {
+	PrintConsole(L"Reporting...\n");
+	OPENFILENAME ofn{};
+	wstring wstrFile;
+	wstrFile.resize(MAX_PATH);
+	WCHAR szCurrentDir[MAX_PATH]{};
+	GetCurrentDirectory(sizeof(szCurrentDir) / sizeof(szCurrentDir[0]) - 1, szCurrentDir);
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = m_hwnd;
+	ofn.lpstrFile = &wstrFile[0];
+	ofn.nMaxFile = wstrFile.size();
+	ofn.lpstrFilter = L"Text files (*.txt)\0*.txt*\0";
+	ofn.nFilterIndex = 1;
+	ofn.lpstrFileTitle = NULL;
+	ofn.nMaxFileTitle = 0;
+	ofn.lpstrInitialDir = szCurrentDir;
+	ofn.Flags = OFN_PATHMUSTEXIST;
+
+	if (GetSaveFileName(&ofn) != TRUE) {
+		PrintConsole(L"Error while invoking GetSaveFileName\n");
+		return;
+	}
+
+	wstring wstrExtension = L".txt";
+	//check if chosen file exist
+	BOOL bExist = FALSE;
+	BOOL bTxtFileExist = FALSE;
+	DWORD dwAttrib = GetFileAttributes(ofn.lpstrFile);
+	if (dwAttrib != INVALID_FILE_ATTRIBUTES &&
+		!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
+		bExist = TRUE;
+	dwAttrib = GetFileAttributes(wstring(ofn.lpstrFile + wstrExtension).c_str());
+	if (dwAttrib != INVALID_FILE_ATTRIBUTES &&
+		!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
+		bTxtFileExist = TRUE;
+
+	size_t iPos{};
+	if (bTxtFileExist == TRUE) {
+		if (MessageBox(m_hwnd, L"Ви дійсно хочете перезаписати вибраний файл?",
+			L"Підтвердження", MB_OKCANCEL) == IDOK) {
+			PrintConsole(L"Rewriting\n");
+			DeleteFile(wstring(ofn.lpstrFile + wstrExtension).c_str());
+			FormPeport(ofn.lpstrFile + wstrExtension, FILE_APPEND_DATA, OPEN_ALWAYS);
+		}
+	}
+	else if ((iPos = wstrFile.rfind(wstrExtension)) != wstring::npos) {
+		if (bExist) {
+			if (MessageBox(m_hwnd, L"Ви дійсно хочете перезаписати вибраний файл?",
+				L"Підтвердження", MB_OKCANCEL) == IDOK) {
+				PrintConsole(L"Rewriting\n");
+				DeleteFile(ofn.lpstrFile);
+				FormPeport(ofn.lpstrFile, FILE_APPEND_DATA, OPEN_ALWAYS);
+			}
+		}
+		else {
+			PrintConsole(L"Writing\n");
+			DeleteFile(ofn.lpstrFile);
+			FormPeport(ofn.lpstrFile, FILE_APPEND_DATA, OPEN_ALWAYS);
+		}
+	}
+	else if (bExist) {
+		MessageBox(m_hwnd, L"Неправильно вибрано файл для збереження", L"Помилка", MB_OK | MB_ICONERROR);
+	}
+	else
+		FormPeport(ofn.lpstrFile + wstrExtension, FILE_APPEND_DATA, OPEN_ALWAYS);
+}
+
+
+void MainWindow::FormPeport(const wstring& wcstFileName, DWORD dwDesiredAccess, DWORD dwCreationDisposition) {
+	PrintConsole(wcstFileName + L'\n');
+	wstring wstrText;
+	wstrText.resize(MAX_PATH);
+	LVCOLUMN lvc{};
+	lvc.mask = LVCF_TEXT;
+	lvc.pszText = &wstrText[0];
+	lvc.cchTextMax = MAX_PATH;
+
+	wstring wstrOut{};
+	wstring wstrTemp{};
+	int strOutLen{ 1 };	//1 for left border
+	for (int i = 0; i < TABLE_COL_NUMBER; ++i)
+		strOutLen += MAX_STR_LEN_COL[i] + 1;
+	wstrOut.replace(0, strOutLen, strOutLen, L'-');
+	PrintConsole(wstrOut);
+	PutFileContent(wcstFileName,wstrOut + L'\n', dwDesiredAccess, dwCreationDisposition);
+	wstrOut.clear();
+	wstrOut += L'|';
+	for (int i = 0; i < TABLE_COL_NUMBER; ++i) {
+		ListView_GetColumn(pTable->GetListViewHandle(), i, &lvc);
+		wstrTemp = lvc.pszText;
+		wstrTemp.resize(MAX_STR_LEN_COL[i], L' ');	//to fill missing characters and align output
+		wstrOut += wstrTemp;
+		wstrOut += L'|';
+	}
+	PrintConsole(wstrOut);
+	PutFileContent(wcstFileName, wstrOut + L'\n', dwDesiredAccess, dwCreationDisposition);
+	for (size_t i = 0; i < data.relative_size(); ++i) {
+		wstrOut.replace(0, strOutLen, strOutLen, L'-');
+		PrintConsole(wstrOut);
+		PutFileContent(wcstFileName, wstrOut + L'\n', dwDesiredAccess, dwCreationDisposition);
+		wstrOut.clear();
+		wstrOut += L'|';
+		for (size_t j = 0; j < data[i].size(); ++j) {
+			wstrTemp = data[i][j];
+			wstrTemp.resize(MAX_STR_LEN_COL[j], L' ');
+			wstrOut += wstrTemp + L'|';
+		}
+		PrintConsole(wstrOut);
+		PutFileContent(wcstFileName, wstrOut + L'\n', dwDesiredAccess, dwCreationDisposition);
+	}
+	wstrOut.replace(0, strOutLen, strOutLen, L'-');
+	PrintConsole(wstrOut);
+	PutFileContent(wcstFileName, wstrOut + L'\n', dwDesiredAccess, dwCreationDisposition);
+	ShellExecuteW(NULL, NULL, wcstFileName.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }

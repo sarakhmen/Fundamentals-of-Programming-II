@@ -26,26 +26,27 @@ LRESULT FindItemDialog::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDC_FINDITEMDIALOG_BUTTON1:
-			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL1, 0);
+			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL0, 0);
 			break;
 		case IDC_FINDITEMDIALOG_BUTTON2:
-			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL2, 1);
+			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL1, 1);
 			break;
 		case IDC_FINDITEMDIALOG_BUTTON3:
-			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL3, 2);
+			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL2, 2);
 			break;
 		case IDC_FINDITEMDIALOG_BUTTON4:
-			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL4, 3);
+			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL3, 3);
 			break;
 		case IDC_FINDITEMDIALOG_BUTTON5:
-			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL5, 4);
+			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL4, 4);
 			break;
 		}
-
 		return 0;
 
 	case WM_CLOSE:
 		//CleanFindTextFields();
+		PostMessage(parent, WM_COMMAND, MAKEWPARAM(IDC_BUTTON_FIND_ITEM, 0), 
+			reinterpret_cast<LPARAM>(GetDlgItem(parent, IDC_BUTTON_FIND_ITEM))); //to end search properly
 		endLoop = true;
 		return 0;
 	}
@@ -121,7 +122,7 @@ void FindItemDialog::OnButtonFind(DWORD id, int maxTextLength, int iColumn) {
 		return;
 	}
 
-	for (size_t i = 0; i < pData->size(); ++i) {
+	for (size_t i = 0; i < pData->relative_size(); ++i) {
 		if (_wcsnicmp(wstr.c_str(), (*pData)[i][iColumn].c_str(), fieldLength) == 0) {
 			pData->pushMaskIndex(i);
 			PrintConsole(L"finded " + (*pData)[i][iColumn] + L'\n');

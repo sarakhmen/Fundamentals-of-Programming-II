@@ -10,6 +10,9 @@ void Data::pushBack(const vector<wstring>& elem) {
 
 vector<vector<wstring>>::iterator Data::erase(int iPos) {
 	if (bMask) {
+		for (size_t i = iPos + 1; i < indexMask.size(); ++i) {
+			--indexMask[i];
+		}
 		auto iter = vecData.erase(vecData.begin() + indexMask[iPos]);
 		indexMask.erase(indexMask.begin() + iPos);
 		return iter;
@@ -43,11 +46,16 @@ bool Data::isMask() {
 }
 
 
-size_t Data::size() {
+size_t Data::relative_size() {
 	if (bMask)
 		return indexMask.size();
 	else
 		return vecData.size();
+}
+
+
+size_t Data::real_size() {
+	return vecData.size();
 }
 
 

@@ -16,7 +16,8 @@ public:
 	vector<wstring>& operator[](int iPos);
 	void clear();
 	bool isMask();
-	size_t size();
+	size_t relative_size();
+	size_t real_size();
 	void setMask(bool);
 	void pushMaskIndex(int);
 };
