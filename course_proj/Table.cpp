@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Table.h"
 
 
@@ -40,7 +41,7 @@ void Table::CreateTable() {
 	InitCommonControlsEx(&icex);
 	lstView = CreateWindow(WC_LISTVIEW,
 		L"",
-		WS_CHILD | LVS_REPORT | LVS_EDITLABELS | LVS_OWNERDATA | WS_VISIBLE | WS_BORDER | WS_TABSTOP,
+		WS_CHILD | LVS_REPORT | LVS_EDITLABELS | LVS_OWNERDATA | WS_VISIBLE | WS_TABSTOP,
 		0, 0, 0, 0,
 		hParent,
 		reinterpret_cast<HMENU>(tableId),
@@ -55,13 +56,21 @@ void Table::CreateTable() {
 
 void Table::InitColumns() {
 	LVCOLUMNW lvColumn{};
-	wstring szStr[5] = { L"Main Column", L"Column 1", L"Column 2", L"Column 3", L"Column 4" };
+	wstring szStr[TABLE_COL_NUMBER] = { COL_NAME_0, COL_NAME_1, COL_NAME_2, COL_NAME_3, COL_NAME_4};
 	ListView_DeleteAllItems(lstView);
 	lvColumn.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 	lvColumn.fmt = LVCFMT_LEFT;
 	lvColumn.cx = 100;
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < TABLE_COL_NUMBER; i++)
 	{
+		if (i == 0)
+			lvColumn.cx = 55;
+		else if (i == 1)
+			lvColumn.cx = 120;
+		else if (i == 2)
+			lvColumn.cx = 200;
+		else
+			lvColumn.cx = 100;
 		lvColumn.pszText = &szStr[i][0];
 		ListView_InsertColumn(lstView, i, &lvColumn);
 	}
@@ -69,27 +78,31 @@ void Table::InitColumns() {
 
 	
 void Table::InitItems() {
-	pData->pushBack({ L"1first", L"1second", L"1third", L"1fourth", L"1fifth" });
-	pData->pushBack({ L"2first", L"2second", L"2third", L"2fourth", L"2fifth" });
-	pData->pushBack({ L"3first", L"3second", L"3third", L"3fourth", L"3fifth" });
-	pData->pushBack({ L"4first", L"4second", L"4third", L"4fourth", L"4fifth" });
-	pData->pushBack({ L"5first", L"5second", L"5third", L"5fourth", L"5fifth" });
-	pData->pushBack({ L"6first", L"6second", L"6third", L"6fourth", L"6fifth" });
-	pData->pushBack({ L"7first", L"7second", L"7third", L"7fourth", L"7fifth" });
-	pData->pushBack({ L"8first", L"8second", L"8third", L"8fourth", L"8fifth" });
-
-	/*LVITEM lvI;
-	lvI.pszText = LPSTR_TEXTCALLBACK;
-	lvI.mask = LVIF_TEXT | LVIF_STATE;
-	lvI.stateMask = 0;
-	lvI.iSubItem = 0;
-	lvI.state = 0;
-
-	for (int index = 0; index < 8; index++)
-	{
-		lvI.iItem = index;
-		ListView_InsertItem(lstView, &lvI);
-	}*/
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Власюк Іван Вікторович", L"(unknown)", L"+380961921937" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Гончарова Єлизавета Максимівна", L"(unknown)", L"+380683875850" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Груздов Максим Олексійович", L"(unknown)", L"+380958067355" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Дудкін Олексій Миколайович", L"(unknown)", L"+380663609313" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Занченко Олексій Дмитрович", L"(unknown)", L"+380916011975" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Захарчук Євгеній Миколайович", L"(unknown)", L"+380970807396" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Котова Анна Андріївна", L"(unknown)", L"+380683875850" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Кравченко Дарія Олександрівна", L"(unknown)", L"+380500110070" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Кубрак Сергій Володимирович", L"(unknown)", L"+380961893911" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Кушнірук Тетяна Олександрівна", L"(unknown)", L"+380969874634" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Лагойда Михайло Мирославович", L"(unknown)", L"+380990929832" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Луговий Святослав Богданович", L"(unknown)", L"+380673973248" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Мангуплі Юлія Дмитрівна", L"(unknown)", L"+380995067428" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Марченко Кіріл Андрійович", L"(unknown)", L"+380672002145" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Міньков Іван Вікторович", L"(unknown)", L"+380999761234" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Мітлицький Владислав Віталійович", L"(unknown)", L"+380964058502" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Моругий Олег Петрович", L"(unknown)", L"+380739963137" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Мосолов Максим Олегович", L"(unknown)", L"+380997974831" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Сарахман Артур Олегович", L"(unknown)", L"+380971266262" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Сідорська Анна Володимирівна", L"(unknown)", L"+380935482623" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Сокирка Кирило Вікторович", L"(unknown)", L"+380665233927" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Сугулов Єгор Сергійович", L"(unknown)", L"+380963268933" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Філюк Дмитро Віталійович", L"(unknown)", L"+380678695532" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Чуй Богдан Сергійович", L"(unknown)", L"+380633129707" });
+	pData->pushBack({ L"ТІ-02", L"(unknown)", L"Чукін Сергій Віталійович", L"(unknown)", L"+380932019309" });
 	UpdateItems();
 }
 

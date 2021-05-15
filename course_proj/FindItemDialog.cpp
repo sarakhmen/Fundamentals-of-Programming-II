@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "FindItemDialog.h"
 
 FindItemDialog::FindItemDialog(HWND hwndParent, Data* pData) {
@@ -23,25 +24,17 @@ LRESULT FindItemDialog::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		OnCreate();
 		return 0;
 
-	case WM_COMMAND:
-		switch (LOWORD(wParam)) {
-		case IDC_FINDITEMDIALOG_BUTTON1:
-			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL0, 0);
-			break;
-		case IDC_FINDITEMDIALOG_BUTTON2:
-			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL1, 1);
-			break;
-		case IDC_FINDITEMDIALOG_BUTTON3:
-			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL2, 2);
-			break;
-		case IDC_FINDITEMDIALOG_BUTTON4:
-			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL3, 3);
-			break;
-		case IDC_FINDITEMDIALOG_BUTTON5:
-			OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL4, 4);
-			break;
+	case WM_COMMAND: 
+	{
+		WORD buttonId = LOWORD(wParam);
+		for (int i = 0; i < TABLE_COL_NUMBER; ++i) {
+			if (buttonId == IDC_FINDITEMDIALOG_BUTTON_0 + i) {
+				OnButtonFind(IDC_FINDITEMDIALOG_EDIT, MAX_STR_LEN_COL[i], i);
+				break;
+			}
 		}
-		return 0;
+	}
+	return 0;
 
 	case WM_CLOSE:
 		//CleanFindTextFields();
@@ -69,19 +62,15 @@ void FindItemDialog::MessageLoop() {
 	endLoop = false;
 	while (GetMessage(&msg, nullptr, 0, 0)) {
 		if (endLoop == true) {
-			PrintConsole(L"must be closed\n");
 			break;
 		}
-		/*PrintConsole(L"AddItem sms received\n");*/
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-	PrintConsole(L"returned\n");
 }
 
 
 void FindItemDialog::OnCreate() {
-	PrintConsole(L"ON_CREATE\n");
 	//check if creation is successful
 	HWND hEdit = CreateWindowExW(
 		WS_EX_CLIENTEDGE, L"EDIT",
@@ -93,11 +82,15 @@ void FindItemDialog::OnCreate() {
 		reinterpret_cast<HMENU>(IDC_FINDITEMDIALOG_EDIT),
 		GetModuleHandle(nullptr),
 		nullptr);
-	CreateFindItemButton(IDC_FINDITEMDIALOG_BUTTON1, L"Пошук в першій колонці", 10, 65, 260, 30);
-	CreateFindItemButton(IDC_FINDITEMDIALOG_BUTTON2, L"Пошук в другій колонці", 10, 110, 260, 30);
-	CreateFindItemButton(IDC_FINDITEMDIALOG_BUTTON3, L"Пошук в третій колонці", 10, 155, 260, 30);
-	CreateFindItemButton(IDC_FINDITEMDIALOG_BUTTON4, L"Пошук в четвертій колонці", 10, 200, 260, 30);
-	CreateFindItemButton(IDC_FINDITEMDIALOG_BUTTON5, L"Пошук в п'ятій колонці", 10, 245, 260, 30);
+
+	wstring wstr[TABLE_COL_NUMBER] = { FIND_LABEL_0, FIND_LABEL_1, FIND_LABEL_2, FIND_LABEL_3, FIND_LABEL_4 };
+	for(int i = 0; i < TABLE_COL_NUMBER; ++i)
+		CreateFindItemButton(IDC_FINDITEMDIALOG_BUTTON_0 + i, wstr[i].c_str(), 10, 65 + i*45, 260, 30);
+	
+	EnumChildWindows(m_hwnd, [](HWND child, LPARAM font) {
+		SendMessage(child, WM_SETFONT, font, true);
+		return TRUE;
+		}, (LPARAM)GetStockObject(DEFAULT_GUI_FONT));
 }
 
 
@@ -125,7 +118,6 @@ void FindItemDialog::OnButtonFind(DWORD id, int maxTextLength, int iColumn) {
 	for (size_t i = 0; i < pData->relative_size(); ++i) {
 		if (_wcsnicmp(wstr.c_str(), (*pData)[i][iColumn].c_str(), fieldLength) == 0) {
 			pData->pushMaskIndex(i);
-			PrintConsole(L"finded " + (*pData)[i][iColumn] + L'\n');
 		}
 	}
 

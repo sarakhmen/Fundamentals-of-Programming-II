@@ -1,11 +1,6 @@
 #ifndef _MAIN_WINDOW_H
 #define _MAIN_WINDOW_H
-#include <Windows.h>
-#include <CommCtrl.h>
-#include <shellapi.h>
-#include <string>
-#include <vector>
-#include "BaseWindow.h"
+
 #include "FileReadWrite.h"
 #include "Resource.h"
 #include "Table.h"
@@ -13,7 +8,6 @@
 #include "EditItemDialog.h"
 #include "FindItemDialog.h"
 #include "Data.h"
-#pragma comment(lib,"Comctl32.lib")
 using namespace std;
 
 

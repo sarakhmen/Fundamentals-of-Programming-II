@@ -1,13 +1,10 @@
 #ifndef _TABLE_H
 #define _TABLE_H
-#include <Windows.h>
-#include <CommCtrl.h>
-#include <vector>
-#include <string>
-#include <exception>
+
 #include "Data.h"
-#pragma comment(lib,"Comctl32.lib")
+#include "Resource.h"
 using namespace std;
+
 
 class Table {
 private:

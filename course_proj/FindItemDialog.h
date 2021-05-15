@@ -1,10 +1,6 @@
 #ifndef _H_FIND_ITEM_DIALOG
 #define _H_FIND_ITEM_DIALOG
 
-#include <Windows.h>
-#include <vector>
-#include <string>
-#include "BaseWindow.h"
 #include "FileReadWrite.h"
 #include "Resource.h"
 #include "Data.h"

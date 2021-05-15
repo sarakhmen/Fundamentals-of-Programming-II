@@ -1,8 +1,6 @@
 #ifndef _H_DATA
 #define _H_DATA
 
-#include <vector>
-#include <string>
 using namespace std;
 
 class Data {

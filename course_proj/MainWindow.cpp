@@ -1,13 +1,18 @@
+#include "stdafx.h"
 #include "MainWindow.h"
 
 
 MainWindow::MainWindow() {
+#ifdef _DEBUG
 	AllocConsole();
+#endif
 }
 
 
 MainWindow::~MainWindow() {
+#ifdef _DEBUG
 	FreeConsole();
+#endif
 	if (pTable)
 		delete pTable;
 	if (addItemDialog) {
@@ -62,28 +67,28 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 BOOL MainWindow::CreateButtons() {
 	if (!CreateWindow(L"BUTTON", L"Завантажити дані", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-		10, 10, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_LOAD_DATA), GetModuleHandle(nullptr), nullptr))
+		12, 10, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_LOAD_DATA), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if (!CreateWindow(L"BUTTON", L"Додати", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-		10, 45, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_ADD_ITEM), GetModuleHandle(nullptr), nullptr))
+		12, 45, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_ADD_ITEM), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if (!CreateWindow(L"BUTTON", L"Звіт", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-		10, 80, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_REPORT), GetModuleHandle(nullptr), nullptr))
+		12, 80, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_REPORT), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if (!CreateWindow(L"BUTTON", L"Видалити виділені", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-		10, 115, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_DEL_SELECTED), GetModuleHandle(nullptr), nullptr))
+		12, 115, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_DEL_SELECTED), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if (!CreateWindow(L"BUTTON", L"Очистити таблицю", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-		10, 150, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_CLEAR), GetModuleHandle(nullptr), nullptr))
+		12, 150, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_CLEAR), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if(!CreateWindow(L"BUTTON", L"Редагувати", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-		10, 185, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_EDIT_ITEM), GetModuleHandle(nullptr), nullptr))
+		12, 185, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_EDIT_ITEM), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if (!CreateWindow(L"BUTTON", L"Пошук", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-		10, 220, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_FIND_ITEM), GetModuleHandle(nullptr), nullptr))
+		12, 220, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_FIND_ITEM), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	if (!CreateWindow(L"BUTTON", L"Зберегти", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-		10, 255, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_SAVE), GetModuleHandle(nullptr), nullptr))
+		12, 255, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_BUTTON_SAVE), GetModuleHandle(nullptr), nullptr))
 		return FALSE;
 	return TRUE;
 }
@@ -128,58 +133,54 @@ void MainWindow::OnButtonClicked(WPARAM wParam, LPARAM lParam) {
 
 void MainWindow::OnCreate() {
 	if (!CreateButtons()) {
-		PrintConsole(L"Error while creating buttons\n");
-		system("pause");
 		PostQuitMessage(0);
 	}
 	pTable = new Table{ m_hwnd, IDC_TABLE, &data, TABLE_OFFSET_X };
 	addItemDialog = new AddItemDialog{ m_hwnd , &data};
-	if (!addItemDialog->Create(L"Add item", 
+	if (!addItemDialog->Create(L"Додавання нового студента", 
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
-		0, 600, 350, 500, 340, m_hwnd))
-		PrintConsole(L"Error while creating AddItemDialog\n");
+		0, 600, 350, 400, 340, m_hwnd))
+		PostQuitMessage(0);
 	editItemDialog = new EditItemDialog{ m_hwnd , &data };
-	if (!editItemDialog->Create(L"Edit item",
+	if (!editItemDialog->Create(L"Редагування",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
-		0, 600, 350, 500, 340, m_hwnd))
-		PrintConsole(L"Error while creating EditItemDialog\n");
+		0, 600, 350, 400
+		, 340, m_hwnd))
+		PostQuitMessage(0);
 	findItemDialog = new FindItemDialog{ m_hwnd , &data };
-	if (!findItemDialog->Create(L"Find item",
+	if (!findItemDialog->Create(L"Пошук",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
-		0, 600, 350, 500, 340, m_hwnd))
-		PrintConsole(L"Error while creating FindItemDialog\n");
+		0, 600, 350, 297, 340, m_hwnd))
+		PostQuitMessage(0);
+	EnumChildWindows(m_hwnd, [](HWND child, LPARAM font){
+		SendMessage(child, WM_SETFONT, font, true);
+		return TRUE;
+		}, (LPARAM)GetStockObject(DEFAULT_GUI_FONT));
 }
 
 
 void MainWindow::OnButtonAddItem() {
-	PrintConsole(L"AddItemDialog created\n");
 	addItemDialog->GetUserInput();
 	pTable->UpdateItems();
-	PrintConsole(L"AddItemDialog destroyed\n");
 }
 
 
 void MainWindow::OnButtonEditItem() {
-	PrintConsole(L"EditItemDialog created\n");
 	int iItem = pTable->GetItemToEdit();
 	if (iItem != -1) {
 		editItemDialog->GetUserEdit(iItem);
 		pTable->UpdateItems();
 	}
-	PrintConsole(L"EditItemDialog destroyed\n");
 }
 
 
 void MainWindow::OnDeleteSelected() {
-	PrintConsole(L"Delete selected start\n");
 	pTable->DeleteSelected();
 	pTable->UpdateItems();
-	PrintConsole(L"Delete selected fineshed\n");
 }
 
 
 void MainWindow::OnButtonClear() {
-	PrintConsole(L"Clear start\n");
 	if(data.relative_size() == 0)
 		MessageBox(m_hwnd, L"Таблиця пуста", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
 	else if (MessageBox(m_hwnd, L"Ви дійсно хочете видалити всі елементи?",
@@ -188,12 +189,10 @@ void MainWindow::OnButtonClear() {
 		pTable->UpdateItems();
 		MessageBox(m_hwnd, L"Всі елементи видалено", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
 	}
-	PrintConsole(L"Clear fineshed\n");
 }
 
 
 void MainWindow::OnButtonLoadData() {
-	PrintConsole(L"Loading table blah blah blah...\n");
 	if(data.isMask()){
 		MessageBox(m_hwnd, L"Закінчте пошук перед тим як завантажити нові дані!", L"Помилка", MB_OK | MB_ICONERROR);
 		return;
@@ -215,7 +214,6 @@ void MainWindow::OnButtonLoadData() {
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
 	if (GetOpenFileName(&ofn) != TRUE){
-		PrintConsole(L"Error while invoking GetOpenFileName\n");
 		return;
 	}
 
@@ -225,7 +223,6 @@ void MainWindow::OnButtonLoadData() {
 	size_t iPos{};
 	if ((iPos = wstrFile.rfind(wstrExtension)) != wstring::npos) {	//if extension specified
 		if (wcscmp(&wstrFile[iPos], wstrExtension.c_str()) == 0) {	//and refers to our file
-			PrintConsole(L"Reading\n");
 			wstring wstBuffer{};
 			data.clear();
 			GetFileContent(ofn.lpstrFile, wstBuffer);
@@ -241,7 +238,6 @@ void MainWindow::OnButtonLoadData() {
 
 
 void MainWindow::OnButtonSaveData() {
-	PrintConsole(L"Saving...\n");
 	OPENFILENAME ofn{};
 	wstring wstrFile;
 	wstrFile.resize(MAX_PATH);
@@ -259,7 +255,6 @@ void MainWindow::OnButtonSaveData() {
 	ofn.Flags = OFN_PATHMUSTEXIST;
 
 	if (GetSaveFileName(&ofn) != TRUE){
-		PrintConsole(L"Error while invoking GetSaveFileName\n");
 		return;
 	}
 
@@ -280,7 +275,6 @@ void MainWindow::OnButtonSaveData() {
 	if (bKursachFileExist == TRUE) {
 		if (MessageBox(m_hwnd, L"Ви дійсно хочете перезаписати вибраний файл?",
 			L"Підтвердження", MB_OKCANCEL) == IDOK) {
-			PrintConsole(L"Rewriting\n");
 			DeleteFile(wstring(ofn.lpstrFile + wstrExtension).c_str());
 			PipeTableDataToFile(ofn.lpstrFile + wstrExtension, FILE_APPEND_DATA, OPEN_ALWAYS);
 		}
@@ -289,13 +283,11 @@ void MainWindow::OnButtonSaveData() {
 		if (bExist) {
 			if (MessageBox(m_hwnd, L"Ви дійсно хочете перезаписати вибраний файл?",
 				L"Підтвердження", MB_OKCANCEL) == IDOK) {
-				PrintConsole(L"Rewriting\n");
 				DeleteFile(ofn.lpstrFile);
 				PipeTableDataToFile(ofn.lpstrFile, FILE_APPEND_DATA, OPEN_ALWAYS);
 			}
 		}
 		else {
-			PrintConsole(L"Writing\n");
 			DeleteFile(ofn.lpstrFile);
 			PipeTableDataToFile(ofn.lpstrFile, FILE_APPEND_DATA, OPEN_ALWAYS);
 		}
@@ -309,10 +301,8 @@ void MainWindow::OnButtonSaveData() {
 
 
 void MainWindow::PipeTableDataToFile(const wstring& wcstFileName, DWORD dwDesiredAccess, DWORD dwCreationDisposition) {
-	PrintConsole(wcstFileName + L'\n');
 	for (size_t i = 0; i < data.relative_size(); ++i) {
 		for (size_t j = 0; j < data[0].size(); ++j) {
-			PrintConsole(data[i][j] + L'\n');
 			PutFileContent(wcstFileName, data[i][j] + L'\n', dwDesiredAccess, dwCreationDisposition);
 		}
 	}
@@ -333,12 +323,10 @@ void MainWindow::ConstructTable(const wstring& wcstBuffer) {
 			iPosNext = wcstBuffer.find(L'\n', iPosPrev);
 		}
 	}
-	PrintConsole(L"Table created");
 }
 
 
 void MainWindow::OnButtonFindItem() {
-	PrintConsole(L"FindItemDialog created\n");
 	if (data.real_size() == 0) {
 		MessageBox(m_hwnd, L"Таблиця пуста", L"Повідомлення", MB_OK | MB_ICONINFORMATION);
 	}
@@ -353,12 +341,10 @@ void MainWindow::OnButtonFindItem() {
 		data.setMask(false);
 		pTable->UpdateItems();
 	}
-	PrintConsole(L"FindItemDialog destroyed\n");
 }
 
 
 void MainWindow::OnButtonReport() {
-	PrintConsole(L"Reporting...\n");
 	OPENFILENAME ofn{};
 	wstring wstrFile;
 	wstrFile.resize(MAX_PATH);
@@ -376,7 +362,6 @@ void MainWindow::OnButtonReport() {
 	ofn.Flags = OFN_PATHMUSTEXIST;
 
 	if (GetSaveFileName(&ofn) != TRUE) {
-		PrintConsole(L"Error while invoking GetSaveFileName\n");
 		return;
 	}
 
@@ -397,7 +382,6 @@ void MainWindow::OnButtonReport() {
 	if (bTxtFileExist == TRUE) {
 		if (MessageBox(m_hwnd, L"Ви дійсно хочете перезаписати вибраний файл?",
 			L"Підтвердження", MB_OKCANCEL) == IDOK) {
-			PrintConsole(L"Rewriting\n");
 			DeleteFile(wstring(ofn.lpstrFile + wstrExtension).c_str());
 			FormPeport(ofn.lpstrFile + wstrExtension, FILE_APPEND_DATA, OPEN_ALWAYS);
 		}
@@ -406,13 +390,11 @@ void MainWindow::OnButtonReport() {
 		if (bExist) {
 			if (MessageBox(m_hwnd, L"Ви дійсно хочете перезаписати вибраний файл?",
 				L"Підтвердження", MB_OKCANCEL) == IDOK) {
-				PrintConsole(L"Rewriting\n");
 				DeleteFile(ofn.lpstrFile);
 				FormPeport(ofn.lpstrFile, FILE_APPEND_DATA, OPEN_ALWAYS);
 			}
 		}
 		else {
-			PrintConsole(L"Writing\n");
 			DeleteFile(ofn.lpstrFile);
 			FormPeport(ofn.lpstrFile, FILE_APPEND_DATA, OPEN_ALWAYS);
 		}
@@ -440,7 +422,6 @@ void MainWindow::FormPeport(const wstring& wcstFileName, DWORD dwDesiredAccess, 
 	for (int i = 0; i < TABLE_COL_NUMBER; ++i)
 		strOutLen += MAX_STR_LEN_COL[i] + 1;
 	wstrOut.replace(0, strOutLen, strOutLen, L'-');
-	PrintConsole(wstrOut);
 	PutFileContent(wcstFileName,wstrOut + L'\n', dwDesiredAccess, dwCreationDisposition);
 	wstrOut.clear();
 	wstrOut += L'|';
@@ -451,11 +432,9 @@ void MainWindow::FormPeport(const wstring& wcstFileName, DWORD dwDesiredAccess, 
 		wstrOut += wstrTemp;
 		wstrOut += L'|';
 	}
-	PrintConsole(wstrOut);
 	PutFileContent(wcstFileName, wstrOut + L'\n', dwDesiredAccess, dwCreationDisposition);
 	for (size_t i = 0; i < data.relative_size(); ++i) {
 		wstrOut.replace(0, strOutLen, strOutLen, L'-');
-		PrintConsole(wstrOut);
 		PutFileContent(wcstFileName, wstrOut + L'\n', dwDesiredAccess, dwCreationDisposition);
 		wstrOut.clear();
 		wstrOut += L'|';
@@ -464,11 +443,10 @@ void MainWindow::FormPeport(const wstring& wcstFileName, DWORD dwDesiredAccess, 
 			wstrTemp.resize(MAX_STR_LEN_COL[j], L' ');
 			wstrOut += wstrTemp + L'|';
 		}
-		PrintConsole(wstrOut);
 		PutFileContent(wcstFileName, wstrOut + L'\n', dwDesiredAccess, dwCreationDisposition);
 	}
 	wstrOut.replace(0, strOutLen, strOutLen, L'-');
-	PrintConsole(wstrOut);
 	PutFileContent(wcstFileName, wstrOut + L'\n', dwDesiredAccess, dwCreationDisposition);
 	ShellExecuteW(NULL, NULL, wcstFileName.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
+

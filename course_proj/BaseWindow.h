@@ -1,6 +1,6 @@
 #ifndef _BASE_WINDOW_H
 #define _BASE_WINDOW_H
-#include <Windows.h>
+
 template <class DERIVED_TYPE>
 class BaseWindow
 {
@@ -11,15 +11,15 @@ public:
 
         if (uMsg == WM_NCCREATE)
         {
-            CREATESTRUCT* pCreate = (CREATESTRUCT*)lParam;
-            pThis = (DERIVED_TYPE*)pCreate->lpCreateParams;
+            CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
+            pThis = reinterpret_cast<DERIVED_TYPE*>(pCreate->lpCreateParams);
             SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pThis);
 
             pThis->m_hwnd = hwnd;
         }
         else
         {
-            pThis = (DERIVED_TYPE*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+            pThis = reinterpret_cast<DERIVED_TYPE*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
         }
         if (pThis)
         {

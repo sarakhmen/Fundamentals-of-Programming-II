@@ -1,9 +1,5 @@
-//{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by Resource.rc
 #ifndef _RESOURCE_H
 #define _RESOURCE_H
-
 
 #define IDC_BUTTON_LOAD_DATA 1000
 #define IDC_BUTTON_ADD_ITEM 1001
@@ -20,48 +16,51 @@
 #define TABLE_OFFSET_X 165
 #define TABLE_COL_NUMBER 5
 
-#define IDC_EDIT1 1051
-#define IDC_EDIT2 1052
-#define IDC_EDIT3 1053
-#define IDC_EDIT4 1054
-#define IDC_EDIT5 1055
-#define ID_ADDITEMDIALOG_BUTTON_ADD 1056
-#define IDC_ITEMDIALOG_STATIC_TEXT1 1057
-#define IDC_ITEMDIALOG_STATIC_TEXT2 1058
-#define IDC_ITEMDIALOG_STATIC_TEXT3 1059
-#define IDC_ITEMDIALOG_STATIC_TEXT4 1060
-#define IDC_ITEMDIALOG_STATIC_TEXT5 1061
-#define ID_EDITITEMDIALOG_BUTTON_EDIT 1062
+#define IDC_ITEMDIALOG_EDIT_0 1051
+#define IDC_ITEMDIALOG_EDIT_1 1052
+#define IDC_ITEMDIALOG_EDIT_2 1053
+#define IDC_ITEMDIALOG_EDIT_3 1054
+#define IDC_ITEMDIALOG_EDIT_4 1055
+
+#define IDC_ADDITEMDIALOG_BUTTON_ADD 1056
+#define IDC_ITEMDIALOG_STATIC_TEXT_0 1057
+#define IDC_ITEMDIALOG_STATIC_TEXT_1 1058
+#define IDC_ITEMDIALOG_STATIC_TEXT_2 1059
+#define IDC_ITEMDIALOG_STATIC_TEXT_3 1060
+#define IDC_ITEMDIALOG_STATIC_TEXT_4 1061
+#define IDC_EDITITEMDIALOG_BUTTON_EDIT 1062
 
 #define IDC_FINDITEMDIALOG_EDIT 1100
-#define IDC_FINDITEMDIALOG_BUTTON1 1101
-#define IDC_FINDITEMDIALOG_BUTTON2 1102
-#define IDC_FINDITEMDIALOG_BUTTON3 1103
-#define IDC_FINDITEMDIALOG_BUTTON4 1104
-#define IDC_FINDITEMDIALOG_BUTTON5 1105
+#define IDC_FINDITEMDIALOG_BUTTON_0 1101
+#define IDC_FINDITEMDIALOG_BUTTON_1 1102
+#define IDC_FINDITEMDIALOG_BUTTON_2 1103
+#define IDC_FINDITEMDIALOG_BUTTON_3 1104
+#define IDC_FINDITEMDIALOG_BUTTON_4 1105
 
-//#define TEXT_LABEL1 L"Поле №1"
-//#define TEXT_LABEL2 L"Поле №2"
-//#define TEXT_LABEL3 L"Поле №3"
-//#define TEXT_LABEL4 L"Поле №4"
-//#define TEXT_LABEL5 L"Поле №5"
+#define TEXT_LABEL_0 L"Назва групи"
+#define TEXT_LABEL_1 L"Номер залікової книжки"
+#define TEXT_LABEL_2 L"ПІБ студента"
+#define TEXT_LABEL_3 L"Адреса місця проживання"
+#define TEXT_LABEL_4 L"Номер телефону"
 
-#define MAX_STR_LEN_COL0 40
-#define MAX_STR_LEN_COL1 40
-#define MAX_STR_LEN_COL2 40
-#define MAX_STR_LEN_COL3 40
-#define MAX_STR_LEN_COL4 40
-const int MAX_STR_LEN_COL[TABLE_COL_NUMBER] = { MAX_STR_LEN_COL0 , MAX_STR_LEN_COL1,
-	MAX_STR_LEN_COL2, MAX_STR_LEN_COL3, MAX_STR_LEN_COL4 };
+#define FIND_LABEL_0 L"Пошук за назвою групою"
+#define FIND_LABEL_1 L"Пошук за номером залікової книжки"
+#define FIND_LABEL_2 L"Пошук за ПІБ-ом"
+#define FIND_LABEL_3 L"Пошук за адресою"
+#define FIND_LABEL_4 L"Пошук за номером телефону"
 
-#endif
-// Next default values for new objects
-// 
-#ifdef APSTUDIO_INVOKED
-#ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        101
-#define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1001
-#define _APS_NEXT_SYMED_VALUE           101
-#endif
+#define MAX_STR_LEN_COL_0 40
+#define MAX_STR_LEN_COL_1 40
+#define MAX_STR_LEN_COL_2 40
+#define MAX_STR_LEN_COL_3 40
+#define MAX_STR_LEN_COL_4 40
+const int MAX_STR_LEN_COL[TABLE_COL_NUMBER] = { MAX_STR_LEN_COL_0 , MAX_STR_LEN_COL_1,
+	MAX_STR_LEN_COL_2, MAX_STR_LEN_COL_3, MAX_STR_LEN_COL_4 };
+
+#define COL_NAME_0 L"Група"
+#define COL_NAME_1 L"№ залікової книжки"
+#define COL_NAME_2 L"ПІБ"
+#define COL_NAME_3 L"Адреса"
+#define COL_NAME_4 L"Телефон"
+
 #endif
