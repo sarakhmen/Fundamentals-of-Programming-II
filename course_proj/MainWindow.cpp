@@ -133,25 +133,53 @@ void MainWindow::OnButtonClicked(WPARAM wParam, LPARAM lParam) {
 
 void MainWindow::OnCreate() {
 	if (!CreateButtons()) {
+		MessageBox(nullptr, L"Не вдалося створити кнопки", L"Помилка", MB_OK | MB_ICONERROR);
 		PostQuitMessage(0);
 	}
-	pTable = new Table{ m_hwnd, IDC_TABLE, &data, TABLE_OFFSET_X };
-	addItemDialog = new AddItemDialog{ m_hwnd , &data};
-	if (!addItemDialog->Create(L"Додавання нового студента", 
-		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
-		0, 600, 350, 400, 340, m_hwnd))
+
+	pTable = new(nothrow) Table{ m_hwnd, IDC_TABLE, &data, TABLE_OFFSET_X };
+	if (!pTable) {
+		MessageBox(nullptr, L"Не вдалося виділити пам'ять під таблицю", L"Помилка", MB_OK | MB_ICONERROR);
 		PostQuitMessage(0);
-	editItemDialog = new EditItemDialog{ m_hwnd , &data };
+	}
+
+	addItemDialog = new(nothrow) AddItemDialog{ m_hwnd , &data};
+	if (!addItemDialog) {
+		MessageBox(nullptr, L"Не вдалося виділити пам'ять під вікно додавання нових елементів", L"Помилка", MB_OK | MB_ICONERROR);
+		PostQuitMessage(0);
+	}
+	if (!addItemDialog->Create(L"Додавання нового студента",
+		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
+		0, 600, 350, 400, 340, m_hwnd)) {
+		MessageBox(nullptr, L"Не вдалося створити вікно додавання нових елементів", L"Помилка", MB_OK | MB_ICONERROR);
+		PostQuitMessage(0);
+	}
+
+	editItemDialog = new(nothrow) EditItemDialog{ m_hwnd , &data };
+	if (!editItemDialog) {
+		MessageBox(nullptr, L"Не вдалося виділити пам'ять під вікно редагування елементів", L"Помилка", MB_OK | MB_ICONERROR);
+		PostQuitMessage(0);
+	}
 	if (!editItemDialog->Create(L"Редагування",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 		0, 600, 350, 400
-		, 340, m_hwnd))
+		, 340, m_hwnd)) {
+		MessageBox(nullptr, L"Не вдалося створити вікно редагування елементів", L"Помилка", MB_OK | MB_ICONERROR);
 		PostQuitMessage(0);
-	findItemDialog = new FindItemDialog{ m_hwnd , &data };
+	}
+
+	findItemDialog = new(nothrow) FindItemDialog{ m_hwnd , &data };
+	if (!findItemDialog) {
+		MessageBox(nullptr, L"Не вдалося виділити пам'ять під вікно пошуку", L"Помилка", MB_OK | MB_ICONERROR);
+		PostQuitMessage(0);
+	}
 	if (!findItemDialog->Create(L"Пошук",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
-		0, 600, 350, 297, 340, m_hwnd))
+		0, 600, 350, 297, 340, m_hwnd)) {
+		MessageBox(nullptr, L"Не вдалося створити вікно пошуку", L"Помилка", MB_OK | MB_ICONERROR);
 		PostQuitMessage(0);
+	}
+
 	EnumChildWindows(m_hwnd, [](HWND child, LPARAM font){
 		SendMessage(child, WM_SETFONT, font, true);
 		return TRUE;
@@ -217,7 +245,6 @@ void MainWindow::OnButtonLoadData() {
 		return;
 	}
 
-	PrintConsole(ofn.lpstrFile);
 	//check extension
 	wstring wstrExtension = L".kursach";
 	size_t iPos{};
@@ -259,7 +286,6 @@ void MainWindow::OnButtonSaveData() {
 	}
 
 	wstring wstrExtension = L".kursach";
-	//check if chosen file exist
 	BOOL bExist = FALSE;
 	BOOL bKursachFileExist = FALSE;
 	DWORD dwAttrib = GetFileAttributes(ofn.lpstrFile);
@@ -366,7 +392,6 @@ void MainWindow::OnButtonReport() {
 	}
 
 	wstring wstrExtension = L".txt";
-	//check if chosen file exist
 	BOOL bExist = FALSE;
 	BOOL bTxtFileExist = FALSE;
 	DWORD dwAttrib = GetFileAttributes(ofn.lpstrFile);
@@ -408,7 +433,6 @@ void MainWindow::OnButtonReport() {
 
 
 void MainWindow::FormPeport(const wstring& wcstFileName, DWORD dwDesiredAccess, DWORD dwCreationDisposition) {
-	PrintConsole(wcstFileName + L'\n');
 	wstring wstrText;
 	wstrText.resize(MAX_PATH);
 	LVCOLUMN lvc{};

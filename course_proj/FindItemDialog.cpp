@@ -82,10 +82,17 @@ void FindItemDialog::OnCreate() {
 		reinterpret_cast<HMENU>(IDC_FINDITEMDIALOG_EDIT),
 		GetModuleHandle(nullptr),
 		nullptr);
+	if (!hEdit) {
+		MessageBox(m_hwnd, L"Не вдалося створити елемент інтерфейсу", L"Помилка", MB_OK | MB_ICONERROR);
+		PostQuitMessage(0);
+	}
 
 	wstring wstr[TABLE_COL_NUMBER] = { FIND_LABEL_0, FIND_LABEL_1, FIND_LABEL_2, FIND_LABEL_3, FIND_LABEL_4 };
 	for(int i = 0; i < TABLE_COL_NUMBER; ++i)
-		CreateFindItemButton(IDC_FINDITEMDIALOG_BUTTON_0 + i, wstr[i].c_str(), 10, 65 + i*45, 260, 30);
+		if (!CreateFindItemButton(IDC_FINDITEMDIALOG_BUTTON_0 + i, wstr[i].c_str(), 10, 65 + i * 45, 260, 30)) {
+			MessageBox(m_hwnd, L"Не вдалося створити елемент інтерфейсу", L"Помилка", MB_OK | MB_ICONERROR);
+			PostQuitMessage(0);
+		}
 	
 	EnumChildWindows(m_hwnd, [](HWND child, LPARAM font) {
 		SendMessage(child, WM_SETFONT, font, true);

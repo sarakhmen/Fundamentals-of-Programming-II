@@ -9,9 +9,10 @@ using namespace std;
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR szCmdLine, int nCmdShow) {
 	MainWindow myWnd;
 
-	if (!myWnd.Create(L"Працівник деканату", WS_OVERLAPPEDWINDOW, 0, 500, 300, 800, 490))
+	if (!myWnd.Create(L"Працівник деканату", WS_OVERLAPPEDWINDOW, 0, 500, 300, 800, 490)) {
+		MessageBox(nullptr, L"Не вдалося створити головне вікно", L"Помилка", MB_OK | MB_ICONERROR);
 		return 0;
-
+	}
 	ShowWindow(myWnd.Window(), nCmdShow);
 
 	MSG msg{};

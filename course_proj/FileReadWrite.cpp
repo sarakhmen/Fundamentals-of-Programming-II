@@ -7,7 +7,7 @@ size_t GetFileContent(const wstring& cstFileName, wstring& wstBuffer)
 	DWORD dwBytesRead = 0;
 	if (hFile != INVALID_HANDLE_VALUE) {
 		DWORD dwFileSize = GetFileSize(hFile, nullptr);
-		wstBuffer.resize(dwFileSize / sizeof(wchar_t) + 1);	//logic will be broken since relative_size could be more by one
+		wstBuffer.resize(dwFileSize / sizeof(wchar_t) + 1);	//so that the logic doesn't brake
 		if (ReadFile(hFile, &wstBuffer[0], dwFileSize, &dwBytesRead, nullptr)) {
 			if (wstBuffer[0] == L'\uFEFF' || wstBuffer[0] == L'\uFFFE')
 				wstBuffer.erase(0, 1);
@@ -27,6 +27,7 @@ size_t PutFileContent(const wstring& wcstFileName, const wstring& wstBuffer, DWO
 	return dwBytesWrite;
 }
 
+//useful in debug
 BOOL PrintConsole(const wstring& wstBuffer) {
 	HANDLE stdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	BOOL result = 0;

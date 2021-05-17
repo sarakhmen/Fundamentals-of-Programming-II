@@ -69,13 +69,23 @@ void AddItemDialog::OnCreate() {
 	//check if creation is successful
 	wstring labels[TABLE_COL_NUMBER] = { TEXT_LABEL_0, TEXT_LABEL_1, TEXT_LABEL_2,  TEXT_LABEL_3, TEXT_LABEL_4 };
 	for (int i = 0; i < TABLE_COL_NUMBER; ++i) {
-		CreateEditTextControl(IDC_ITEMDIALOG_EDIT_0 + i, 110, 15 + i*45, 260, 30, MAX_STR_LEN_COL[i]);
-		CreateStaticTextControl(IDC_ITEMDIALOG_STATIC_TEXT_0 + i, labels[i].c_str(), 10, 15 + i*45, 100, 30);
+		if (!CreateEditTextControl(IDC_ITEMDIALOG_EDIT_0 + i, 110, 15 + i * 45, 260, 30, MAX_STR_LEN_COL[i])) {
+			MessageBox(m_hwnd, L"Не вдалося створити елемент інтерфейсу", L"Помилка", MB_OK | MB_ICONERROR);
+			PostQuitMessage(0);
+		}
+		if(!CreateStaticTextControl(IDC_ITEMDIALOG_STATIC_TEXT_0 + i, labels[i].c_str(), 10, 15 + i * 45, 100, 30)) {
+			MessageBox(m_hwnd, L"Не вдалося створити елемент інтерфейсу", L"Помилка", MB_OK | MB_ICONERROR);
+			PostQuitMessage(0);
+		}
 	}
 
-	CreateWindow(L"BUTTON", L"Додати", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+	if (!CreateWindow(L"BUTTON", L"Додати", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
 		130, 250, BUTTONS_WIDTH, BUTTONS_HEIGHT, m_hwnd, reinterpret_cast<HMENU>(IDC_ADDITEMDIALOG_BUTTON_ADD),
-		GetModuleHandle(nullptr), nullptr);
+		GetModuleHandle(nullptr), nullptr)) {
+		MessageBox(m_hwnd, L"Не вдалося створити елемент інтерфейсу", L"Помилка", MB_OK | MB_ICONERROR);
+		PostQuitMessage(0);
+	}
+
 	EnumChildWindows(m_hwnd, [](HWND child, LPARAM font) {
 		SendMessage(child, WM_SETFONT, font, true);
 		return TRUE;
